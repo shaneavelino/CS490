@@ -11,7 +11,7 @@
   $njit_post = http_build_query(array('user_name' => $db_json['user'], 'passwd' => $db_json['password'], 'SUBMIT' => 'Login'));
 
   /** cURL to db script */
-  $db_endpoint = 'https://web.njit.edu/~tg253/userservice.php';
+  $db_endpoint = 'https://web.njit.edu/~tg253/490/userservice.php';
   $db_response = curl_post_request($db_endpoint, $db_post);
   $db_validation = json_decode($db_response, true);
   
@@ -27,7 +27,7 @@
   } else {
     $response['dbAuthenticated'] = 'false';
   }
-
+  
   /** set up njit validation to send back to front end */
   $missing_creds = 'Please';
   $bad_creds = 'Invalid';
