@@ -23,7 +23,7 @@ class Controller {
     * $body: post json object
     * return: curl response
     */
-  function curl_post_request($url, $body) {
+  public function curl_post_request($url, $body) {
     $ch = curl_init();
 
     curl_setopt_array($ch, array(
