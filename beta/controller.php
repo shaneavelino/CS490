@@ -18,6 +18,25 @@
 
 class Controller {
 
+  private $url;
+  private $body;
+  
+  public function setUrl($url) {
+    $this->url = $url;
+  }
+
+  public function getUrl() {
+    return $this->url;
+  }
+
+  public function setBody($body) {
+    $this->body = $body;
+  }
+
+  public function getBody() {
+    return $this->body;
+  }
+
   /** params:
     * $url: endpoint to curl
     * $body: post json object
@@ -41,7 +60,7 @@ class Controller {
     * $url: endpoint to curl
     * return: curl response
     */
-  function curl_get_request($url) {
+  public function curl_get_request($url) {
     $ch = curl_init();
 
     curl_setopt_array($ch, array(
