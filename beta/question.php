@@ -1,5 +1,14 @@
 <?php
 
+/** Question.php
+ * Written by: Avel Shane Coronado
+ * CS490 Spring 2020
+ * POST requests to this endpoint will curl to the backend database
+ *      in order to insert a question object into the question bank
+ * 
+ * Will validate if insert was successful or not
+*/
+
 require_once('./controller.php');
 require_once('./constants.php');
 
