@@ -121,19 +121,27 @@ $student_answer_func_name = substr($open_paren, strlen($def));
 
 // get the student object
 foreach($json as $item) {
-  print_r( 'Student name: ' . '\'' . $item['student'] . '\' ');
-  print_r( 'Exam name: ' . $item['name'] . ' ');
+  //print_r( 'Student name: ' . '\'' . $item['student'] . '\' ');
+  //print_r( 'Exam name: ' . '\'' .  $item['name'] . '\' ');
   // get the exam object array from the json object
   foreach($json as $item) {
     foreach($item['exam'] as $exam_item) {
-      $question = $exam_item['question'];
-      $answer = $exam_item['answer'];
+      // python def keyword (3 chars)
+      $def = substr($exam_item['answer'], 0, 3);
 
-      if ($question == $student_answer_func_name) {
+      // returns everything before the open paren 'def squareNumber'
+      $open_paren = strstr($exam_item['answer'], "(", true);
+      //echo 'the exam question: ' . '\'' . $exam_item['question'] . '\' ';
+      //echo 'before (: ' . '\'' . $open_paren . '\' ';
+      //echo 'the answer func: ' . '\'' . substr($open_paren, strlen($def)+1) . '\' ';
+      
+      if ($exam_item['question'] == substr($open_paren, strlen($def)+1)) {
         echo 'true';
       } else {
         echo 'false';
       }
+
+      
     }
   }
 }
