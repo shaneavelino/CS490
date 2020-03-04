@@ -6,16 +6,17 @@ require_once('./constants.php');
 /** Grader.php
  * Written by: Avel Shane Coronado
  * CS490 Spring 2020
- * POST requests to this endpoint will take in a list of completed student exams,
- * extract each exam question name, answers (testCases), and raw student answers
+ * POST requests to this endpoint will take in a student ID and exam name
+ * It will then GET request to the completed student's exam and then it will:
+ * extract each question name, answers (testCases), and raw student answers
  * 
  * For each exam question: 
- * 1. Test the function name and ensure it was written correctly 
- * 2. Test the raw answer and exec the python code to ensure it passes 2 test cases
+ * 1. Test the function name and ensure it was written correctly (points)
+ * 2. Test the raw answer and exec the python code to ensure it passes 2 test cases (points)
 */
 
 /** initialize response body into an associative array */
-$response = array('examResults' => array('student' => 'asc8', 'results' => array('name' => 'foobar', 'score' => '75')));
+$response = array('examResults' => array('student' => '', 'results' => array('name' => '', 'score' => '')));
 
 /** decode the incoming question request into an associative array */
 $post = file_get_contents('php://input');
@@ -80,74 +81,82 @@ class Grader {
 
     // response of the string of the function name
     echo substr($open_paren, strlen($def));
-
-
   }
 }
 
 
 
-/** cURL backend exam using query parameter for the name
- * front end will pass query name through json
-*/
-//$endpoint = EXAM_URL . '?' . http_build_query('');
-
-//$controller = new Controller();
-//$controller->setUrl($endpoint);
-
-//$curl = $controller->curl_get_request($endpoint);
 
 
 
 
-$grades = isset($json['student']);
-$student = isset($json['student']['0']['student']);
+if (isset($json['exam']) && isset($json['user'])) {
+  /** cURL backend exam using query parameter for the name
+   * front end will pass query name through json
+   */
+  $endpoint = STUDENT_EXAM . '?' . http_build_query(array('exam' => $json['exam'], 'user' => $json['user']));
+  
+  $controller = new Controller();
+  $controller->setUrl($endpoint);
+  $curl = $controller->curl_get_request($controller->getUrl());
+  $db_validation = json_decode($curl, true);
+  
+  // this is the information from the database for the provided student and exam name
+  echo $curl;
 
-$raw_answer = "def square(i): return i * i";
-$test_cases = "";
-
-// python def keyword (3 chars)
-$def = substr($raw_answer, 0, 3);
-
-// returns everything before the open paren 'def squareNumber'
-$open_paren = strstr($raw_answer, "(", true);
-
-// want to get the function name, def_FUNCTIONNAME()
-// its in between the space after def and the first open parenthesis
-// returns the name of the answer's function
-
-// uncomment this line to enable the string of the function name
-$student_answer_func_name = substr($open_paren, strlen($def));
-
-// get the student object
-foreach($json as $item) {
-  //print_r( 'Student name: ' . '\'' . $item['student'] . '\' ');
-  //print_r( 'Exam name: ' . '\'' .  $item['name'] . '\' ');
-  // get the exam object array from the json object
-  foreach($json as $item) {
-    foreach($item['exam'] as $exam_item) {
-      // python def keyword (3 chars)
-      $def = substr($exam_item['answer'], 0, 3);
-
-      // returns everything before the open paren 'def squareNumber'
-      $open_paren = strstr($exam_item['answer'], "(", true);
-      //echo 'the exam question: ' . '\'' . $exam_item['question'] . '\' ';
-      //echo 'before (: ' . '\'' . $open_paren . '\' ';
-      //echo 'the answer func: ' . '\'' . substr($open_paren, strlen($def)+1) . '\' ';
-      
-      if ($exam_item['question'] == substr($open_paren, strlen($def)+1)) {
-        echo 'true';
-      } else {
-        echo 'false';
-      }
-
-      
-    }
-  }
+  echo isset($db_validation['results']);
+} else {
+  echo 'POST error: fields \'user\' and \'exam\' were not properly passed.';
 }
+
+
+// $student = isset($json['student']['0']['student']);
+
+// $raw_answer = "def square(i): return i * i";
+// $test_cases = "";
+
+// // python def keyword (3 chars)
+// $def = substr($raw_answer, 0, 3);
+
+// // returns everything before the open paren 'def squareNumber'
+// $open_paren = strstr($raw_answer, "(", true);
+
+// // want to get the function name, def_FUNCTIONNAME()
+// // its in between the space after def and the first open parenthesis
+// // returns the name of the answer's function
+
+// // uncomment this line to enable the string of the function name
+// $student_answer_func_name = substr($open_paren, strlen($def));
+
+// // get the student object
+// foreach($json as $item) {
+//   //print_r( 'Student name: ' . '\'' . $item['student'] . '\' ');
+//   //print_r( 'Exam name: ' . '\'' .  $item['name'] . '\' ');
+//   // get the exam object array from the json object
+//   foreach($json as $item) {
+//     foreach($item['exam'] as $exam_item) {
+//       // python def keyword (3 chars)
+//       $def = substr($exam_item['answer'], 0, 3);
+
+//       // returns everything before the open paren 'def squareNumber'
+//       $open_paren = strstr($exam_item['answer'], "(", true);
+//       //echo 'the exam question: ' . '\'' . $exam_item['question'] . '\' ';
+//       //echo 'before (: ' . '\'' . $open_paren . '\' ';
+//       //echo 'the answer func: ' . '\'' . substr($open_paren, strlen($def)+1) . '\' ';
+      
+//       if ($exam_item['question'] == substr($open_paren, strlen($def)+1)) {
+//         echo 'true';
+//       } else {
+//         echo 'false';
+//       }
+
+      
+//     }
+//   }
+// }
 
 // return result as our 'response'
-header('Content-type: application/json');
+//header('Content-type: application/json');
 //echo json_encode($response);
 
 ?>

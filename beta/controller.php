@@ -66,7 +66,7 @@ class Controller {
     curl_setopt_array($ch, array(
       CURLOPT_URL => $url,
       CURLOPT_RETURNTRANSFER => 1,
-      CURLOPT_GET => 1
+      CURLOPT_HTTPGET => 1
     ));
 
     return curl_exec($ch);
