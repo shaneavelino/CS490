@@ -72,6 +72,26 @@ class Controller {
     return curl_exec($ch);
     curl_close($ch);
   }
+
+
+  /** params:
+    * $url: endpoint to curl
+    * $body: put json object
+    * return: curl response
+    */
+  public function curl_put_request($url, $body) {
+    $ch = curl_init();
+
+    curl_setopt_array($ch, array(
+      CURLOPT_URL => $url,
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_PUT => 1,
+      CURLOPT_POSTFIELDS => $body
+    ));
+
+    return curl_exec($ch);
+    curl_close($ch);
+  }
 }
 
 ?>
