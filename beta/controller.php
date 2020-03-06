@@ -85,7 +85,7 @@ class Controller {
     curl_setopt_array($ch, array(
       CURLOPT_URL => $url,
       CURLOPT_RETURNTRANSFER => 1,
-      CURLOPT_PUT => 1,
+      CURLOPT_CUSTOMREQUEST => "PUT",
       CURLOPT_POSTFIELDS => $body
     ));
 

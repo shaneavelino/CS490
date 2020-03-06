@@ -8,6 +8,7 @@ $response = array('dbAuthenticated' => 'false', 'role' => '');
 
 /** decode the incoming login request into an associative array */
 $db_post = file_get_contents('php://input');
+echo $db_post;
 $db_json = json_decode($db_post, true);
 
 /** check if incoming php is properly formatted */
