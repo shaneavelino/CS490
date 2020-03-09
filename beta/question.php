@@ -3,50 +3,50 @@
 /** Question.php
  * Written by: Avel Shane Coronado
  * CS490 Spring 2020
- * POST requests to this endpoint will curl to the backend database
- *      in order to insert a question object into the question bank
- * 
- * Will validate if insert was successful or not
+ * POST/GET requests to this endpoint will curl to the backend database
+ *          in order to insert a question object into the question bank
 */
 
 require_once('./controller.php');
 require_once('./constants.php');
 
-/** initialize response body into an associative array */
-$response = array('validInsert' => 'false');
+$response = array('questionInsertValid' => 'false');
 
-/** decode the incoming question request into an associative array */
 $post = file_get_contents('php://input');
 $json = json_decode($post, true);
 
-/** set the JSON variable names */
 $name = isset($json['name']);
 $desc = isset($json['description']);
 $diff = isset($json['difficulty']);
 $cate = isset($json['category']);
 $test = isset($json['testCases']);
 
-/** check if incoming php is properly formatted */
-if ($name && $desc && $diff && $cate && $test) {
-    // cURL to Tom's db script
-    $endpoint = QUESTION_URL;
+$endpoint = QUESTION_URL;
 
-    /** create an instance of controller for curl request */
+if ($name && $desc && $diff && $cate && $test) {
+
     $controller = new Controller();
     $controller->setUrl($endpoint);
     $controller->setBody($post);
 
-    // curl the backend with url and body as parameters
     $curl = $controller->curl_post_request($controller->getUrl(), $controller->getBody());
-
-    // TODO: set up validation to send back to front end
-    // check if the insert was valid to the table
+    
+    $validate_curl = json_decode($curl, true);
+    if ($validate_curl['insert'] == 'true') {
+        $response['questionInsertValid'] = 'true';
+    }
 
     header('Content-Type: application/json');
     echo json_encode($response);
 
 } else {
-    echo 'POST error: fields \'name\', \'description\', \'difficulty\', \'category\', and \'testCases\' were not properly passed.';
+
+    $controller = new Controller();
+    $controller->setUrl($endpoint);
+    $curl = $controller->curl_get_request($controller->getUrl());
+
+    header('Content-Type: application/json');
+    echo $curl;
 }
 
 ?>

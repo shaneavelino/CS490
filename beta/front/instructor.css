@@ -1,0 +1,62 @@
+.instructor-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.question-form-container {
+  flex-grow: 1;
+}
+
+.question-bank-container {
+  flex-grow: 1;
+}
+
+.question-form {
+  position: relative;
+}
+
+.flex-form {
+  list-style-type: none;
+}
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  width: 100%;
+}
+
+th,
+td {
+  overflow: hidden;
+  white-space: nowrap;
+  -moz-text-overflow: ellipsis;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+
+th {
+  background: white;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+li {
+  margin-bottom: 5px;
+}

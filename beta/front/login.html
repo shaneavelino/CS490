@@ -4,18 +4,26 @@
     <script>
       var responseObject;
 
-      function updateScreen() {
-        let span1 = document.getElementById("span1");
-        let span2 = document.getElementById("span2");
-
-        if (responseObject.njitAuthenticated == "true") {
-          span1.innerText = "NJIT Login Successful | ";
-        } else {
-          span1.innerText = "NJIT Login Unsuccessful | ";
+      function routeUser(role) {
+        if (role == "Professor") {
+          window.location.href =
+            "http://localhost:3000/CS490/beta/front/instructor.html";
+        } else if (role == "Student") {
+          window.location.href =
+            "http://localhost:3000/CS490/beta/front/student.html";
         }
+      }
 
+      function updateScreen() {
         if (responseObject.dbAuthenticated == "true") {
           span2.innerText = "DB Login Successful";
+          if (responseObject.role == "Professor") {
+            routeUser(responseObject.role);
+          } else if (responseObject.role == "Student") {
+            routeUser(responseObject.role);
+          } else {
+            span2.innerText = "Login Error";
+          }
         } else {
           span2.innerText = "DB Login Unsuccessful";
         }
@@ -47,6 +55,7 @@
           }
         };
         //4. Post it to Shane with Curl
+        //asc8 foobar
       }
     </script>
   </head>

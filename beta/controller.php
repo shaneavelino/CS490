@@ -15,7 +15,6 @@
  *  result
  */
 
-
 class Controller {
 
   private $url;
@@ -72,7 +71,6 @@ class Controller {
     return curl_exec($ch);
     curl_close($ch);
   }
-
 
   /** params:
     * $url: endpoint to curl

@@ -8,7 +8,6 @@ $response = array('dbAuthenticated' => 'false', 'role' => '');
 
 /** decode the incoming login request into an associative array */
 $db_post = file_get_contents('php://input');
-echo $db_post;
 $db_json = json_decode($db_post, true);
 
 /** check if incoming php is properly formatted */
@@ -23,7 +22,7 @@ if (isset($db_json['user']) && isset($db_json['password'])) {
   $controller->setBody($db_post);
 
   // curl the backend
-  $curl = $controller->curl_post_request($controller->getUrl(), $controller->getBody()); 
+  $curl = $controller->curl_post_request($controller->getUrl(), $controller->getBody());
   $db_validation = json_decode($curl, true);
 
   /** set up validation to send back to front end */

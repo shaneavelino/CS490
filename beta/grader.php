@@ -139,9 +139,6 @@ if (isset($json['exam']) && isset($json['user'])) {
   
   // instantiate a Grader object to run the grader
   $grader = new Grader();
-
-  // this is the information from the database for the provided student and exam name
-  //echo $curl;
   
   /** check if the results field is provided */
   if (isset($db_validation['results'])) {
