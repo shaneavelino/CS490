@@ -3,19 +3,31 @@
     <title>Exam Portal</title>
     <link rel="stylesheet" type="text/css" href="student.css" />
   </head>
-  <body>
-    <div class="student-container">
+  <body onload="init()">
+    <div class="student-nav">
       <div id="student-header" class="student-header"></div>
-      <div id="exam-form" class="exam-form"></div>
-      <div id="exam-results" class="exam-results"></div>
+      <a href="#exam">Exams</a>
+      <a href="#results">Results</a>
     </div>
+    <div class="student-container">
+      <div class="exam-container">
+        <div id="exam-form" class="exam-form"></div>
+        <div id="exam-results" class="exam-results"></div>
+      </div>
+    </div>
+
     <script>
       var responseObject;
 
+      function init() {
+        console.log("loaded Student page");
+        // do validation here
+      }
+
       function updateScreen() {
         if (responseObject.examResultsInserted == "true") {
-          
         }
+        autoGrade();
       }
       function getUser() {
         let user = sessionStorage.user;
@@ -41,7 +53,7 @@
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
-            let examToTake = response[1]["exam"];
+            let examToTake = response[2]["exam"];
             loadExamQuestions(examToTake);
             // store the exam name in session storage for sending the student results
             sessionStorage.setItem("exam", examToTake);
@@ -186,12 +198,26 @@
         }
       }
 
-      function init() {
+      function autoGrade() {
+        let json = {
+          user: sessionStorage.user,
+          exam: sessionStorage.exam
+        };
 
+        var data = JSON.stringify(json);
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "callGrader.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            let response = JSON.parse(request.responseText);
+            console.log(response);
+          }
+        };
       }
-
-      function autoGrade() {}
-      init();
       getUser();
       getExam();
     </script>

@@ -1,4 +1,4 @@
-def doubleTheNum(x): 
-	print(x+x) 
+def subtractThNum(i,j): 
+	print(i - j) 
 
-doubleTheNum(2)
+subtractThNum(100,60)
