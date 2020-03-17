@@ -69,6 +69,8 @@
               "testCases"
             ];
 
+            var testCases = ["input", "output"];
+
             var capitalize = function(s) {
               return s.charAt(0).toUpperCase() + s.slice(1);
             };
@@ -92,7 +94,11 @@
                 var td = document.createElement("td");
                 td.appendChild(document.createTextNode(row[properties[i]]));
                 tr.appendChild(td);
-                //console.log(row[properties[i]]);
+                for (var j = 0; j < testCases.length; j++) {
+                  //console.log(row[properties[5]][j]);
+                  var tcRow = document.getElementById("questionTable");
+                }
+                //console.log(row[properties[5]]);
               }
               table.appendChild(tr);
             }

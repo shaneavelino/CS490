@@ -6,11 +6,13 @@
 
       function routeUser(role) {
         if (role == "Professor") {
-          window.location.href =
-            "http://localhost:3000/CS490/beta/front/instructor.html";
+          window.location.replace(
+            "http://localhost:3000/CS490/beta/front/instructor.html"
+          );
         } else if (role == "Student") {
-          window.location.href =
-            "http://localhost:3000/CS490/beta/front/student.html";
+          window.location.replace(
+            "http://localhost:3000/CS490/beta/front/student.html"
+          );
         }
       }
 
@@ -50,6 +52,8 @@
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             responseObject = JSON.parse(request.responseText);
+            sessionStorage.setItem("user", json.user);
+            sessionStorage.setItem("role", responseObject.role);
             updateScreen();
             console.log(responseObject);
           }

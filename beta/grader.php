@@ -135,6 +135,7 @@ if (isset($json['exam']) && isset($json['user'])) {
   $get_controller = new Controller();
   $get_controller->setUrl($endpoint);
   $curl = $get_controller->curl_get_request($get_controller->getUrl());
+  //echo $curl;
   $db_validation = json_decode($curl, true);
   
   // instantiate a Grader object to run the grader

@@ -1,8 +1,199 @@
 <html>
-  <head> </head>
+  <head>
+    <title>Exam Portal</title>
+    <link rel="stylesheet" type="text/css" href="student.css" />
+  </head>
   <body>
-    <div>
-      <h3>Student Login: Welcome, user</h3>
+    <div class="student-container">
+      <div id="student-header" class="student-header"></div>
+      <div id="exam-form" class="exam-form"></div>
+      <div id="exam-results" class="exam-results"></div>
     </div>
+    <script>
+      var responseObject;
+
+      function updateScreen() {
+        if (responseObject.examResultsInserted == "true") {
+          
+        }
+      }
+      function getUser() {
+        let user = sessionStorage.user;
+        let message = "Welcome, " + user + "!";
+
+        var h2 = document.createElement("h2");
+        h2.appendChild(document.createTextNode(message));
+
+        document.getElementById("student-header").appendChild(h2);
+      }
+
+      // get the current open exam for the student logged on
+      function getExam() {
+        let user = sessionStorage.user;
+        let json = { fetchExamsByUser: user };
+        let data = JSON.stringify(json);
+
+        let request = new XMLHttpRequest();
+        request.open("POST", "getExam.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            let response = JSON.parse(request.responseText);
+            let examToTake = response[1]["exam"];
+            loadExamQuestions(examToTake);
+            // store the exam name in session storage for sending the student results
+            sessionStorage.setItem("exam", examToTake);
+          }
+        };
+      }
+
+      // retrieve exam and render exam form
+      function loadExamQuestions(examToTake) {
+        let exam = examToTake;
+        let json = { examName: exam };
+        var data = JSON.stringify(json);
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "getExam.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            var response = JSON.parse(request.responseText);
+            console.log(response);
+
+            // create a form for the exam
+            var form = document.createElement("form");
+            form.setAttribute("method", "POST");
+            form.setAttribute("action", "#");
+            form.setAttribute(
+              "onsubmit",
+              "event.preventDefault();submitExam();"
+            );
+
+            var properties = ["Function name: "];
+
+            var capitalize = function(s) {
+              return s.charAt(0).toUpperCase() + s.slice(1);
+            };
+
+            // Create a list with the exam questions
+            var ol = document.createElement("ol");
+            ol.setAttribute("id", "current-exam");
+            for (var i = 0; i < response["questions"].length; i++) {
+              var li = document.createElement("li");
+              // set the list attribute id to the question name so we can send it back to the result service
+              li.setAttribute("id", response["questions"][i]["name"]);
+              var pQuestion = document.createElement("p");
+
+              pQuestion.appendChild(
+                document.createTextNode(
+                  properties +
+                    response["questions"][i]["name"] +
+                    " [" +
+                    response["questions"][i]["score"] +
+                    " points]"
+                )
+              );
+              li.appendChild(pQuestion);
+
+              var pDescription = document.createElement("p");
+              pDescription.appendChild(
+                document.createTextNode(
+                  capitalize(response["questions"][i]["description"])
+                )
+              );
+              li.appendChild(pDescription);
+
+              var labelAnswer = document.createElement("label");
+              labelAnswer.setAttribute("for", "answer");
+              labelAnswer.appendChild(document.createTextNode("Answer: "));
+              li.appendChild(labelAnswer);
+
+              // create input element for each question answer
+              var inputAnswer = document.createElement("input");
+              let iter = "answerInput" + i;
+              inputAnswer.setAttribute("id", iter);
+              inputAnswer.setAttribute("class", "answer-input");
+              inputAnswer.setAttribute("type", "text");
+              li.appendChild(inputAnswer);
+
+              //console.log(response["questions"][i]["name"]);
+              ol.appendChild(li);
+            }
+
+            var submitButton = document.createElement("input");
+            submitButton.setAttribute("type", "submit");
+            submitButton.setAttribute("value", "Submit");
+            ol.appendChild(submitButton);
+
+            form.appendChild(ol);
+            console.log(form);
+            document.getElementById("exam-form").appendChild(form);
+          }
+        };
+      }
+
+      // submit the exam to middle
+      function submitExam() {
+        var submitFinal = confirm(
+          "Are you sure you want to submit your exam? You cannot undo this option."
+        );
+        if (submitFinal == true) {
+          let json = {
+            user: sessionStorage.user,
+            exam: sessionStorage.exam,
+            results: []
+          };
+
+          // loop through the form order list minus the last item because its the submit button
+          const currExam = document.getElementById("current-exam");
+          for (let i = 0; i < currExam.children.length - 1; i++) {
+            var resultsIter = { question: "", answer: "" };
+            // each question name from the form
+            let questionId = currExam.children[i].getAttribute("id");
+
+            // append it to the json
+            resultsIter["question"] = questionId;
+
+            // each answer name from the form
+            let listId = document.getElementById(questionId);
+            let answerId = listId.children[3].getAttribute("id");
+            let answerText = document.getElementById(answerId).value;
+            resultsIter["answer"] = answerText;
+
+            // push the answer per question into the final result array to middle
+            json["results"].push(resultsIter);
+          }
+
+          var data = JSON.stringify(json);
+
+          var request = new XMLHttpRequest();
+          request.open("POST", "postResult.php", true);
+          request.setRequestHeader("Content-type", "application/json");
+          request.send(data);
+
+          request.onreadystatechange = function() {
+            if (request.status == 200 && request.readyState == 4) {
+              responseObject = JSON.parse(request.responseText);
+              console.log(responseObject);
+              updateScreen();
+            }
+          };
+        }
+      }
+
+      function init() {
+
+      }
+
+      function autoGrade() {}
+      init();
+      getUser();
+      getExam();
+    </script>
   </body>
 </html>
