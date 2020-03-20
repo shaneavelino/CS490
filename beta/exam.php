@@ -52,6 +52,17 @@ if (isset($json['name']) && isset($json['creator']) && isset($json['questions'])
     header('Content-Type: application/json');
     echo $curl;
 
+} else if (isset($json['professor'])) {
+
+    // curl backend GET with prof parameter to get all exams by instructor
+    $endpoint = $endpoint . '?' . http_build_query(array('prof' => $json['professor']));
+    $controller = new Controller();
+    $controller->setUrl($endpoint);
+    $curl = $controller->curl_get_request($controller->getUrl());
+
+    header('Content-Type: application/json');
+    echo $curl;
+    
 } else if (isset($json['examGraded'])){
 
     // PUT to exam service backend to mark an exam graded

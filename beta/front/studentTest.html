@@ -19,13 +19,20 @@
         </li>
       </ul>
     </div>
-    <div id="student-container" class="student-container"></div>
+    <div id="student-container" class="student-container">
+      <div id="exam" class="exam-container">
+        <div id="exam-form" class="exam-form"></div>
+      </div>
+      <div id="result" class="result-container">
+        <div id="exam-results" class="exam-results"></div>
+      </div>
+    </div>
 
     <script type="text/javascript">
-      var studentDiv = document.getElementById("student-container");
+      var responseObject;
 
       function init() {
-        // validate login
+        // validate login, prevent direct route to student.html
         if (!(sessionStorage.role == "Student")) {
           document.write("<h1>ACCESS DENIED</h1>");
         } else {
@@ -34,19 +41,81 @@
           // create the home div on load
           var studentDiv = document.getElementById("student-container");
           var homeDiv = document.createElement("div");
-          homeDiv.setAttribute("id", "home-container");
+          homeDiv.setAttribute("id", "home");
           homeDiv.setAttribute("class", "home-container");
           studentDiv.appendChild(homeDiv);
 
-          // display welcome message
-          var home = document.getElementById("home-container");
-          var h2 = document.createElement("h2");
-          h2.setAttribute("id", "welcome-message");
-          h2.setAttribute("class", "welcome-message");
-          h2.appendChild(
-            document.createTextNode("Welcome to the Exam Portal!")
-          );
+          renderHome();
+        }
+      }
+
+      function renderHome() {
+        // create a welcome message
+        var home = document.getElementById("home");
+        var h2 = document.createElement("h2");
+        h2.setAttribute("class", "welcome-message");
+        h2.setAttribute("id", "welcome-rendered");
+        h2.appendChild(document.createTextNode("Welcome to the Exam Portal!"));
+
+        var homeRendered = document.getElementById("welcome-rendered");
+        if (document.body.contains(homeRendered)) {
+          location.reload();
+        } else {
           home.appendChild(h2);
+        }
+      }
+
+      function renderExam() {
+        var examRendered = document.getElementById("exam-rendered");
+        var homeRendered = document.getElementById("welcome-rendered");
+        var resultsRendered = document.getElementById("results-rendered");
+
+        var studentDiv = document.getElementById("student-container");
+        var examDiv = document.createElement("div");
+        examDiv.setAttribute("id", "exam");
+        examDiv.setAttribute("class", "exam-container");
+        studentDiv.appendChild(examDiv);
+
+        if (document.body.contains(examRendered)) {
+          alert("You already have an active exam open");
+        } else {
+          getExam();
+        }
+
+        if (document.body.contains(homeRendered)) {
+          homeRendered.remove();
+        } else {
+          console.log("exam already loaded");
+        }
+      }
+
+      function renderResults() {
+        var resultsRendered = document.getElementById("results-rendered");
+        var homeRendered = document.getElementById("welcome-rendered");
+        var examRendered = document.getElementById("exam-form");
+
+        if (document.body.contains(resultsRendered)) {
+          location.reload();
+        } else {
+          getResults();
+        }
+
+        if (document.body.contains(examRendered)) {
+          examRendered.remove();
+        } else {
+          getExam();
+        }
+
+        if (document.body.contains(homeRendered)) {
+          homeRendered.remove();
+        } else {
+          console.log("results already loaded");
+        }
+      }
+
+      function updateScreen() {
+        if (responseObject.examResultsInserted == "true") {
+          autoGrade();
         }
       }
 
@@ -56,80 +125,12 @@
 
         var a = document.createElement("a");
         a.setAttribute("href", "javascript:;");
+        //a.setAttribute("class", "active");
         a.setAttribute("id", "nav-button");
-        a.setAttribute("onclick", "location.reload();");
+        a.setAttribute("onclick", "renderHome();");
         a.appendChild(document.createTextNode(message));
 
         document.getElementById("home-link").appendChild(a);
-      }
-
-      function renderExam() {
-        // remove home container
-        var home = document.getElementById("home-container");
-        if (document.body.contains(home)) {
-          home.remove();
-        }
-
-        // remove results container
-        var results = document.getElementById("results-container");
-        if (document.body.contains(results)) {
-          results.remove();
-        }
-
-        // create the exam container on click if it does not exist
-        if (
-          !document.body.contains(document.getElementById("exam-container"))
-        ) {
-          var examDiv = document.createElement("div");
-          examDiv.setAttribute("id", "exam-container");
-          examDiv.setAttribute("class", "exam-container");
-          studentDiv.appendChild(examDiv);
-        }
-
-        // handle clicking exam button when already there
-        if (document.body.contains(document.getElementById("exam-rendered"))) {
-          alert("You already have an active exam in progress!");
-        } else {
-          if (sessionStorage.submitted == "1") {
-            alert("You have already submitted your exam.");
-            location.reload();
-          } else {
-            getExam();
-          }
-        }
-      }
-
-      function renderResults() {
-        // remove home container
-        var home = document.getElementById("home-container");
-        if (document.body.contains(home)) {
-          home.remove();
-        }
-
-        // remove exam container
-        var exam = document.getElementById("exam-container");
-        if (document.body.contains(exam)) {
-          exam.remove();
-        }
-
-        // create the results container on click if it does not exist
-        if (
-          !document.body.contains(document.getElementById("results-container"))
-        ) {
-          var resultsDiv = document.createElement("div");
-          resultsDiv.setAttribute("id", "results-container");
-          resultsDiv.setAttribute("class", "results-container");
-          studentDiv.appendChild(resultsDiv);
-        }
-
-        // handle clicking results button when already there
-        if (
-          document.body.contains(document.getElementById("results-rendered"))
-        ) {
-          alert("You are already viewing results!");
-        } else {
-          getResults();
-        }
       }
 
       // get the current open exam for the student logged on
@@ -146,10 +147,10 @@
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
-            let currExam = response[0]["exam"];
-            loadExam(currExam);
+            let examToTake = response[2]["exam"];
+            loadExam(examToTake);
             // store the exam name in session storage for sending the student results
-            sessionStorage.setItem("exam", currExam);
+            sessionStorage.setItem("exam", examToTake);
           }
         };
       }
@@ -168,17 +169,17 @@
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             var response = JSON.parse(request.responseText);
+            console.log(response);
 
             var examTitle = document.createElement("h2");
             examTitle.setAttribute("id", "exam-rendered");
             examTitle.appendChild(
               document.createTextNode(response["name"].toUpperCase())
             );
-            document.getElementById("exam-container").appendChild(examTitle);
+            document.getElementById("exam").appendChild(examTitle);
 
             // create a form for the exam
             var form = document.createElement("form");
-            form.setAttribute("id", "exam-form");
             form.setAttribute("method", "POST");
             form.setAttribute("action", "#");
             form.setAttribute(
@@ -243,14 +244,17 @@
             ol.appendChild(submitButton);
 
             form.appendChild(ol);
-            document.getElementById("exam-container").appendChild(form);
+            console.log(form);
+            document.getElementById("exam").appendChild(form);
           }
         };
       }
 
       // submit the exam to middle
       function submitExam() {
-        var submitFinal = confirm("Are you sure you want to submit your exam?");
+        var submitFinal = confirm(
+          "Are you sure you want to submit your exam? You cannot undo this option."
+        );
         if (submitFinal == true) {
           let json = {
             user: sessionStorage.user,
@@ -287,27 +291,9 @@
 
           request.onreadystatechange = function() {
             if (request.status == 200 && request.readyState == 4) {
-              let responseObject = JSON.parse(request.responseText);
-              console.log("Exam submitted: ", responseObject);
-
-              if (responseObject.examResultsInserted == "true") {
-                // delete exam form and show success message
-                document.getElementById("exam-form").remove();
-
-                var p = document.createElement("p");
-                p.appendChild(
-                  document.createTextNode(
-                    "You have successfully submitted your exam!"
-                  )
-                );
-
-                document.getElementById("exam-container").appendChild(p);
-
-                // call the auto grader
-                autoGrade();
-              } else {
-                alert("There was an issue submitting this exam");
-              }
+              responseObject = JSON.parse(request.responseText);
+              console.log(responseObject);
+              updateScreen();
             }
           };
         }
@@ -355,14 +341,11 @@
             var properties = ["Function name: "];
 
             // check if exam is graded
-            if (responseObject["graded"] == "1") {
-              // store the graded exam, prevent the student from attempting to take exam again
-              sessionStorage.setItem("submitted", responseObject["graded"]);
-
+            if ((responseObject["graded"] = "1")) {
               var graded = document.createElement("h2");
               graded.setAttribute("id", "results-rendered");
               graded.appendChild(document.createTextNode("RESULTS:"));
-              document.getElementById("results-container").appendChild(graded);
+              document.getElementById("exam-results").appendChild(graded);
 
               let olresult = document.createElement("ol");
               olresult.setAttribute("id", "current-exam-results");
@@ -385,21 +368,21 @@
                 olresult.appendChild(li);
               }
 
-              document
-                .getElementById("results-container")
-                .appendChild(olresult);
+              document.getElementById("exam-results").appendChild(olresult);
             } else {
               var ungraded = document.createElement("h2");
-              ungraded.setAttribute("id", "results-rendered");
               ungraded.appendChild(
                 document.createTextNode(
                   "RESULTS NOT GRADED. PLEASE CHECK BACK LATER."
                 )
               );
-              document
-                .getElementById("results-container")
-                .appendChild(ungraded);
+              document.getElementById("exam-results").appendChild(ungraded);
             }
+
+            // show question
+
+            // show student answer
+            // show adjusted grade (final grade for the question)
             // show running total score
           }
         };
