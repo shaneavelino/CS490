@@ -5,111 +5,6 @@
 <title>Exam Portal</title>
 <link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
 <link rel="stylesheet" type="text/css" href="instructor.css" />
-    <script>
-      var responseObject;
-
-      function updateScreen() {
-        if (responseObject.questionInsertValid == "true") {
-          insertSuccessText.innerText = "Question Insert Successful";
-        } else {
-          insertSuccessText.innerText = "Question Insert Unsuccessful";
-        }
-      }
-
-      function onSubmit() {
-        let questionName = document.getElementById("name");
-        let questionDescription = document.getElementById("description");
-        let questionDifficulty = document.getElementById("difficulty");
-        let questionCategory = document.getElementById("category");
-        let testCaseInput1 = document.getElementById("testCaseInput1");
-        let testCaseOutput1 = document.getElementById("testCaseOutput1");
-        let testCaseInput2 = document.getElementById("testCaseInput2");
-        let testCaseOutput2 = document.getElementById("testCaseOutput2");
-
-        let json = {
-          name: questionName.value,
-          description: questionDescription.value,
-          difficulty: questionDifficulty.value,
-          category: questionCategory.value,
-          testCases: [
-            { input: testCaseInput1.value, output: testCaseOutput1.value },
-            { input: testCaseInput2.value, output: testCaseOutput2.value }
-          ]
-        };
-
-        var data = JSON.stringify(json);
-        console.log(data);
-
-        var request = new XMLHttpRequest();
-        request.open("POST", "postQuestion.php", true);
-        request.setRequestHeader("Content-type", "application/json");
-        request.send(data);
-
-        request.onreadystatechange = function() {
-          if (request.status == 200 && request.readyState == 4) {
-            responseObject = JSON.parse(request.responseText);
-            updateScreen();
-            console.log(responseObject);
-          }
-        };
-      }
-
-      function loadQuestions() {
-        var request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-          if (this.status == 200 && this.readyState == 4) {
-            var data = this.responseText;
-            var response = JSON.parse(data);
-
-            var table = document.createElement("table");
-            table.setAttribute("class", "question");
-
-            var properties = [
-              "name",
-              "description",
-              "difficulty",
-              "category",
-              "score",
-              "testCases"
-            ];
-
-            var capitalize = function(s) {
-              return s.charAt(0).toUpperCase() + s.slice(1);
-            };
-
-            var tr = document.createElement("tr");
-            for (var i = 0; i < properties.length; i++) {
-              var th = document.createElement("th");
-              th.appendChild(
-                document.createTextNode(capitalize(properties[i]))
-              );
-              tr.appendChild(th);
-            }
-            table.appendChild(tr);
-
-            var tr, row;
-            //console.log(response);
-            for (var r = 0; r < response.length; r++) {
-              tr = document.createElement("tr");
-              row = response[r];
-              for (var i = 0; i < properties.length; i++) {
-                var td = document.createElement("td");
-                td.appendChild(document.createTextNode(row[properties[i]]));
-                tr.appendChild(td);
-                //console.log(row[properties[i]]);
-              }
-              table.appendChild(tr);
-            }
-            document.getElementById("questionTable").appendChild(table);
-          }
-        };
-        request.open("GET", "getQuestion.php");
-        request.send();
-      }
-
-      loadQuestions();
-    </script>
-
 </head>
 <body>
 
@@ -120,9 +15,9 @@
         <h2>Create a Question</h2>
         <div class="question-form">
           <form
+            id="qForm"
             method="POST"
             action="#"
-            onsubmit="event.preventDefault();onSubmit();"
           >
             <ul class="flex-form">
               <li>
@@ -197,25 +92,42 @@
           <span id="insertSuccessText"></span>
         </div>
       </div>
-      <div class="question-bank-container">
-        <h2>Question Bank</h2>
-        <div id="questionTable"></div>
-      </div>
 
 <div id="examCreate">
-
-
     <h2>Create an Exam</h2>
     <form id="eForm">
         <label for="examName">Name</label>
         <input type="text" id="examName"/><br/>
-
         <input type="submit" value="Create">
         <table id="qTable">
         </table>  
     </form>
 </div>
 
+<div id="examAssign">
+    <h2>Assign and Close Exams</h2>
+    <form id="assignForm">
+        <input type="submit" value="Assign">
+        <input type="submit" value="close"><br/>
+        <label for="sTable">Students</label> 
+        <table id="sTable">
+        </table>
+        <label for="aTable">Exams</label>
+        <table id="aTable">
+        </table>
+    </form>
+</div>
+
+<div id="gradeExam">
+    <h2>Grade Exam</h2>
+    <form id="gradeForm">
+        <input type="submit" value="Grade">
+        <table id="gTable">
+        </table>    
+    </form>
+</div>
+
 <script src="Professor.js"></script> 
 </body>
 </html> 
+
