@@ -37,6 +37,18 @@ if (isset($db_json['user']) && isset($db_json['password'])) {
   header('Content-Type: application/json');
   echo json_encode($response);
 
+} else if (isset($db_json['role'])) {
+
+  // curl user endpoint to get all users by role
+  $db_endpoint = USER_URL . '?' . http_build_query(array('role' => $db_json['role']));
+  $controller = new Controller();
+  $controller->setUrl($db_endpoint);
+
+  $curl = $controller->curl_get_request($controller->getUrl());
+  
+  header('Content-Type: application/json');
+  echo $curl;
+
 } else {
   echo 'POST error: fields \'user\' and \'password\' were not properly passed.';
 }

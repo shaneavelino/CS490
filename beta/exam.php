@@ -62,8 +62,8 @@ if (isset($json['name']) && isset($json['creator']) && isset($json['questions'])
 
     header('Content-Type: application/json');
     echo $curl;
-    
-} else if (isset($json['examGraded'])){
+
+} else if (isset($json['examGraded'])) {
 
     // PUT to exam service backend to mark an exam graded
     $controller = new Controller();
@@ -107,6 +107,18 @@ if (isset($json['name']) && isset($json['creator']) && isset($json['questions'])
     $endpoint = $endpoint . '?' . http_build_query(array('user' => $json['fetchExamsByUser']));
     $controller = new Controller();
     $controller->setUrl($endpoint);
+    $curl = $controller->curl_get_request($controller->getUrl());
+
+    header('Content-Type: application/json');
+    echo $curl;
+
+} else if (isset($json['fetchAllExamsByProf'])) {
+
+    // get all exams by professor name
+    $endpoint = $endpoint . '?' . http_build_query(array('prof' => $json['fetchAllExamsByProf']));
+    $controller = new Controller();
+    $controller->setUrl($endpoint);
+
     $curl = $controller->curl_get_request($controller->getUrl());
 
     header('Content-Type: application/json');
