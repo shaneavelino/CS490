@@ -7,7 +7,7 @@ function createExam(event){
     const examForm = document.querySelector('#eForm');
     const jsonData = {
        name: examForm.elements['examName'].value,
-       creator: "snape",
+       creator: user,
        questions:getCheckedRows('qTable')
     }
     submitJsonData(
@@ -22,11 +22,13 @@ function getCheckedRows(table){
     let checkedRows = [];
     var table = document.getElementById(table);
     // iterate through rows 
-    for (var i = 0, row; row = table.rows[i]; i++) {
+    for (var i = 1, row; row = table.rows[i]; i++) {
         // test if a row is checked 
         if(row.getElementsByTagName('input')[0].checked){
             obj={};
-            obj.name = row.cells[1].innerHTML;
+            obj.name = row.cells[2].innerHTML;
+            console.log(row.cells[1].value); 
+            obj.score = row.cells[1].value;
             checkedRows.push(obj); 
         }
     }    
@@ -34,6 +36,27 @@ function getCheckedRows(table){
 
 }
 
+// confirm grades 
+function confirmGrades(event){
+    event.preventDefault(); 
+    const table = document.querySelector('#gTable');
+    for (var i = 1, row; row = table.rows[i]; i++) {
+        jsonData = {
+             'user':row.cells[1].innerHTML,
+             'exam':selectedExam,
+             'adjustedGrade':row.cells[0].firstChild.value,           
+             'question':row.cells[2].innerHTML,
+             'autograde':row.cells[5].innerHTML,
+
+
+        }  
+        submitJsonData(
+            'https://web.njit.edu/~asc8/cs490/beta/middle/result.php',
+            'PUT',
+            JSON.stringify(jsonData)
+       )
+    }
+}
 
 
 function assignExam(event){
@@ -75,6 +98,20 @@ function assignExam(event){
 }
 
 
+// renders table headders 
+function renderHeaders(headers, table){
+    var tr = document.createElement('tr');
+    table.appendChild(tr);
+    headers.map((header)=>{
+	var th = document.createElement('th');
+	th.innerHTML = header; 
+	tr.appendChild(th);    
+    })
+
+
+}
+
+
 //inserts columns into row 
 function genColumn(item,row){
     var tdElement = document.createElement('td');
@@ -85,34 +122,65 @@ function genColumn(item,row){
 
 
 //inserts rows into table 
+function genAssign(row,table){
+    var tr = document.createElement('tr');
+    table.appendChild(tr);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML = '<input type="checkbox">';
+    tr.appendChild(tdElement);
+    Object.values(row).forEach(value => { 
+        genColumn(value,tr);
+    });
+}
+
+//inserts rows into table                                                                                                         
 function genQuestion(row,table){
     var tr = document.createElement('tr');
     table.appendChild(tr);
     var tdElement = document.createElement('td');
     tdElement.innerHTML = '<input type="checkbox">';
     tr.appendChild(tdElement);
+    var scoreElement = document.createElement('td');
+    scoreElement.innerHTML = '<input type="text">';
+    tr.appendChild(scoreElement);
+
+    console.log(row);
     Object.values(row).forEach(value => {
-        // add an input for score 
+        // add an input for score                                                                                                 
         genColumn(value,tr);
     });
+}
+
+//renders options for grader drop down 
+function renderOptions(exams){
+    let selectBar = document.querySelector('#selectBar');
+    exams.map((exam)=>{
+        let opt = document.createElement('option');
+        opt.setAttribute('value', exam.name);
+        opt.innerHTML = exam.name;
+        selectBar.appendChild(opt);    
+     });
+
 }
 
 //renders table 
 async function renderQuestions(){
     const questionUrl = 'https://web.njit.edu/~asc8/cs490/beta/middle/question.php';
     let table = document.querySelector('#qTable');
-    table.innerHTML = "";
+    table.innerHTML = '';
+    renderHeaders(['Select','Update Score','Question','Description','Dificulty','Category','Score'],table);
     response = await  getJsonData(questionUrl);
     response.map((currentVal)=>{genQuestion(currentVal,table);});
 }
 
-//renders students                                                                                                                      
+//renders students                                                                                   
 async function renderStudents(){
     const questionUrl = 'https://web.njit.edu/~tg253/490/userservice.php?role=student';
     let table = document.querySelector('#sTable');
     table.innerHTML = "";
+    renderHeaders(['Select','Student'],table);
     response = await  getJsonData(questionUrl);
-    response.student.map((currentVal)=>{genQuestion(currentVal,table);});
+    response.student.map((currentVal)=>{genAssign(currentVal,table);});
 }
 
 
@@ -121,18 +189,56 @@ async function renderExams(){
   const examUrl = "https://web.njit.edu/~asc8/cs490/beta/middle/exam.php";
   let table = document.querySelector('#aTable');
   table.innerHTML = "";
+  renderHeaders(['Select','Exam'],table);
   let body = new Object; 
-  body.professor = "snape"; 
+  body.professor = user; 
   response = await  postJsonData(examUrl,body);
   console.log(response);
-  response.exams.map((currentVal)=>{genQuestion(currentVal,table);});
+  response.exams.map((currentVal)=>{genAssign(currentVal,table);});
+}
+
+async function renderGrader(prof){
+    const profExamUrl = "https://web.njit.edu/~tg253/490/examservice.php?prof="
+    let form = document.querySelector('#gradeform');
+    let getUrl = profExamUrl + prof; 
+    let examsResponse = await getJsonData(getUrl);
+    renderOptions(examsResponse.exams);   
 }
 
 //grade exam 
-
-function gradeExam(event){
+async function gradeExam(event){
    event.preventDefault(); 
-   console.log("graded"); 
+   let selectBar = document.querySelector('#selectBar');
+   let  val = selectBar.options[selectBar.selectedIndex].value; 
+   selectedExam = val; 
+   document.querySelector('#updateGrade').removeAttribute("hidden"); 
+   console.log(val);
+   let gradeUrl = "https://web.njit.edu/~asc8/cs490/beta/middle/result.php";
+   let body = new Object;
+   body.fetchAllResultsByExam = val;
+   let data = await postJsonData(gradeUrl,body); 
+   console.log(data);
+   renderGradeTable(data,val);
+ 
+}
+
+// render grade table 
+function renderGradeTable(data,exam){
+    let table = document.querySelector('#gTable');
+    table.innerHTML = '';
+    renderHeaders(['Adjusted Grade','Student','Question','Test Cases','Answer','Auto-Grade'],table);
+    data[exam].map((row)=>{
+        var tr = document.createElement('tr');
+        table.appendChild(tr);
+        var tdElement = document.createElement('td');
+        tdElement.innerHTML = '<input type="text">';
+        tr.appendChild(tdElement); 
+        Object.values(row).forEach((value) => {
+           genColumn(value,tr);
+
+       })
+    })
+ 
 }
 
 
@@ -216,9 +322,12 @@ function onSubmit(event) {
 
 // Adds function calls to html representation calls initial functions 
 function init(){
+
+
+
     //use to validate user role 
-    let user = sessionStorage.getItem('user');
-    let role = 'professor';//sessionStorage.getItem('role');
+    user = 'snape' ;// sessionStorage.getItem('user');
+    role = 'professor';//sessionStorage.getItem('role');
     if (!(role === 'professor')){
         document.write('<h1>ACCESS DENIED</h1>');
     }
@@ -226,12 +335,16 @@ function init(){
     document.getElementById('qForm').onsubmit = onSubmit;
     document.getElementById('assignForm').onsubmit = assignExam;
     document.getElementById('gradeForm').onsubmit = gradeExam; 
+    document.getElementById('updateGrade').onsubmit = confirmGrades; 
     renderQuestions();
     renderExams();
     renderStudents();
-
+    renderGrader(user);
 }
-
+//globals 
+var selectedExam = '';
+var user = ""; 
+var role = ""; 
 // globals and init code 
 var responseObject;
 
