@@ -50,6 +50,8 @@
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             responseObject = JSON.parse(request.responseText);
+            sessionStorage.setItem("user", json.user);
+            sessionStorage.setItem("role", responseObject.role);
             updateScreen();
             console.log(responseObject);
           }

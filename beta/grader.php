@@ -18,6 +18,9 @@ require_once('./constants.php');
 /** initialize the PUT request body into an associative array to send to Tom's PUT service */
 $put_request = array('user' => '', 'exam' => '', 'question' => '', 'autoGrade' => '', 'adjustedGrade' => '');
 
+// response for successful grading
+$grader_response = array('isFullExamGraded' => '');
+
 /** decode the incoming question request into an associative array */
 $post = file_get_contents('php://input');
 $json = json_decode($post, true);
@@ -181,14 +184,20 @@ if (isset($json['exam']) && isset($json['user'])) {
       $put_controller->setUrl($put_exam_result);
       $put_controller->setBody($put_json_request);
       $put_curl = $put_controller->curl_put_request($put_controller->getUrl(), $put_controller->getBody());
-      $put_validation = json_decode($put_curl, true);
       
-      header("Content-Type: application/json");
-      echo $put_curl;
+      // validate each question was graded successfully
+      $put_validation = json_decode($put_curl, true);
+      if ($put_validation['update'] == 'true') {
+        $grader_response['isFullExamGraded'] = 'true';  
+      } else {
+        $grader_response['isFullExamGraded'] = 'false';
+      }
     }
   } else {
     echo 'STUDENT_EXAM error: could not find the results property.';
   }
+  header('Content-Type: application/json');
+  echo json_encode($grader_response);
 } else {
   echo 'POST error: fields \'user\' and \'exam\' were not properly passed.';
 }
