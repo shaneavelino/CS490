@@ -146,7 +146,7 @@
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
-            let currExam = response[3]["exam"];
+            let currExam = response[0]["exam"];
             loadExam(currExam);
             // store the exam name in session storage for sending the student results
             sessionStorage.setItem("exam", currExam);
