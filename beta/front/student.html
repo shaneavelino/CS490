@@ -376,8 +376,11 @@
                   document.createTextNode(
                     properties +
                       responseObject["results"][i]["question"] +
-                      " [Your score: " +
+                      " [Your autograde score: " +
                       responseObject["results"][i]["autoGrade"] +
+                      " points]" +
+                      " [Your adjusted score: " +
+                      responseObject["results"][i]["adjustedGrade"] +
                       " points]"
                   )
                 );
