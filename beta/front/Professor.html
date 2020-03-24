@@ -6,34 +6,46 @@
 <link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
 <link rel="stylesheet" type="text/css" href="student.css" />
 </head>
-<body style="margin: 0px;" >
- <div class="header-container">
+<body style="margin: 0;">
+    <div class="header-container">
       <ul id="nav-bar" class="nav">
         <li class="nav-link" id="home-link"></li>
         <li class="nav-link" id="question-link">
-          <a href="javascript:;" id="nav-button"
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('questionCreate'));"
             >Create a Question</a
           >
         </li>
         <li class="nav-link" id="create-link">
-          <a href="javascript:;" id="nav-button" 
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('examCreate'));"
             >Create an Exam</a
           >
         </li>
         <li class="nav-link" id="assign-link">
-          <a href="javascript:;" id="nav-button"
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('examAssign'));"
             >Assign Exams</a
           >
         </li>
         <li class="nav-link" id="grade-link">
-          <a href="javascript:;" id="nav-button"
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('gradeExam'));"
             >Grade Exams</a
           >
         </li>
       </ul>
     </div>
 
-<div class="question-form-container">
+<div class="question-form-container" id='questionCreate'>
         <h2>Create a Question</h2>
         <div class="question-form">
           <form
@@ -124,7 +136,7 @@
         </div>
       </div>
 
-<div id="examCreate">
+<div id="examCreate" hidden>
     <h2>Create an Exam</h2>
     
     <h4>Apply Filters</h4> 
@@ -163,7 +175,7 @@
     </form>
 </div>
 
-<div id="examAssign">
+<div id="examAssign" hidden>
     <h2>Assign and Close Exams</h2>
     <form id="assignForm">
         <input type="submit" value="Assign">
@@ -177,7 +189,7 @@
     </form>
 </div>
 
-<div id="gradeExam">
+<div id="gradeExam" hidden>
     <h2>Grade Exam</h2>
     <form id="gradeForm">
         <input type="submit" value="Grade Exam"/>

@@ -1,4 +1,4 @@
- 
+
 //creates question
 
 //creates exam from selected questions 
@@ -329,6 +329,29 @@ function applyFilters(event){
    dificulty = document.getElementById('difficultySelect').value; 
    renderQuestions();
    console.log(category,dificulty);
+}
+
+function visibilityChange(element) {
+  let createQuestion = document.getElementById("questionCreate");
+  let createExam = document.getElementById("examCreate");
+  let assignExam = document.getElementById("examAssign");
+  let gradeExam = document.getElementById("gradeExam");
+
+  if ((element.hidden = true)) {
+    element.hidden = false;
+    if (element != createQuestion) {
+      createQuestion.hidden = true;
+    }
+    if (element != createExam) {
+      createExam.hidden = true;
+    }
+    if (element != assignExam) {
+      assignExam.hidden = true;
+    }
+    if (element != gradeExam) {
+      gradeExam.hidden = true;
+    }
+  }
 }
 
 // Adds function calls to html representation calls initial functions 
