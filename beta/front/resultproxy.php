@@ -22,7 +22,7 @@ class proxyHandler {
             break;
         case 'put':
             header('Content-Type: application/json');
-            echo $this->handlePost($body);
+            echo $this->handlePut($body);
             break;
 
         default:
@@ -42,6 +42,24 @@ class proxyHandler {
         curl_close($curl);
 
         return $retval;
+    }
+
+    public function handlePut($data){
+        $retval = "";
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $this->url);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data))
+        );
+        $retval = curl_exec($curl);
+        curl_close($curl);
+
+        return $retval;
+
     } 
 
 

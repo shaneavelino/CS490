@@ -2,7 +2,7 @@
 //creates question
 
 //creates exam from selected questions 
-function createExam(event){
+async function createExam(event){
     event.preventDefault();
     const examForm = document.querySelector('#eForm');
     const jsonData = {
@@ -10,15 +10,35 @@ function createExam(event){
        creator: user,
        questions:getCheckedRows('qTable')
     }
-    submitJsonData(
+    let response = await submitJsonData(
         "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php",
         "POST",
-        JSON.stringify(jsonData));
+        JSON.stringify(jsonData))
     renderExams();
 }
 
-//get checked rows 
+//get checked rows                                                                                     
 function getCheckedRows(table){
+    let checkedRows = [];
+    var table = document.getElementById(table);
+    // iterate through rows                                                                            
+    for (var i = 1, row; row = table.rows[i]; i++) {
+        // test if a row is checked                                                                    
+        if(row.getElementsByTagName('input')[0].checked){
+            obj={};
+            obj.name = row.cells[2].innerHTML;
+            obj.score = row.cells[1].childNodes[0].value;
+            checkedRows.push(obj);
+        }
+    }
+    console.log(checkedRows);
+    return checkedRows;
+
+}
+
+
+//get checked rows 
+function getCheckedStudents(table){
     let checkedRows = [];
     var table = document.getElementById(table);
     // iterate through rows 
@@ -27,17 +47,17 @@ function getCheckedRows(table){
         if(row.getElementsByTagName('input')[0].checked){
             obj={};
             obj.name = row.cells[1].innerHTML;
-            console.log(row.cells[1].value); 
-            obj.score = row.cells[1].value;
+            console.log(row.cells[1].innerHTML); 
             checkedRows.push(obj); 
         }
     }    
+    console.log(checkedRows);
     return checkedRows;
 
 }
 
 // confirm grades 
-function confirmGrades(event){
+async function confirmGrades(event){
     event.preventDefault(); 
     const table = document.querySelector('#gTable');
     for (var i = 1, row; row = table.rows[i]; i++) {
@@ -46,17 +66,18 @@ function confirmGrades(event){
              'exam':selectedExam,
              'adjustedGrade':row.cells[0].firstChild.value,           
              'question':row.cells[2].innerHTML,
-             'autograde':row.cells[5].innerHTML,
+             'autograde':row.cells[4].innerHTML,
 
 
         }  
         submitJsonData(
-            'https://web.njit.edu/~tg253/cs490/beta/front/resultproxy.php',
+            'https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php',
             'PUT',
             JSON.stringify(jsonData)
        )
     }
-}
+    gradeExam(document.createEvent('Event'));
+  }
 
 
 function assignExam(event){
@@ -65,20 +86,20 @@ function assignExam(event){
     let formVal = event.explicitOriginalTarget.value;
     let jsonData = {}
     if(formVal === 'Assign'){
-        console.log("assign to students");
-        let exams = getCheckedRows('aTable');
-        let students = getCheckedRows('sTable');
+        let exams = getCheckedStudents('aTable');
+        let students = getCheckedStudents('sTable');
         students.map((student)=>{
            exams.map((exam) =>{
+              console.log(student);
               let jsonBody = {
-                  user: student, 
-		  exam: exam
+                  user: student.name, 
+		  exam: exam.name
               }
               // fix to use middle endpoint  
               submitJsonData(
                   "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php",
                   "POST",
-                  JSON.stringify(jsonData));
+                  JSON.stringify(jsonBody));
             
         })});
     }
@@ -93,7 +114,6 @@ function assignExam(event){
            }
         );
     }
-
 }
 
 
@@ -169,7 +189,7 @@ async function renderQuestions(){
     renderHeaders(['Select','Update Score','Question','Description','Dificulty','Category','Score'],table);
     response = await  getJsonData(questionUrl);
     response.map((currentVal)=>{
-    console.log(currentVal.category);
+    
     if(dificulty !== 'none' && currentVal.difficulty !== dificulty){
        return; 
     }
@@ -193,13 +213,12 @@ async function renderStudents(){
 
 // renders table of exams by professor 
 async function renderExams(){
-  const examUrl = "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php";
+  const examUrl = "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php?prof=";
   let table = document.querySelector('#aTable');
   table.innerHTML = "";
   renderHeaders(['Select','Exam'],table);
-  let body = new Object; 
-  body.professor = user; 
-  response = await  postJsonData(examUrl,body);
+  let getUrl = examUrl + user;
+  response = await  getJsonData(getUrl);
   response.exams.map((currentVal)=>{genAssign(currentVal,table);});
 }
 
@@ -213,12 +232,12 @@ async function renderGrader(prof){
 
 //grade exam 
 async function gradeExam(event){
-   event.preventDefault(); 
+   event.preventDefault();
    let selectBar = document.querySelector('#selectBar');
    let  val = selectBar.options[selectBar.selectedIndex].value; 
    selectedExam = val; 
    document.querySelector('#updateGrade').removeAttribute("hidden"); 
-   let gradeUrl = "https://web.njit.edu/~asc8/cs490/beta/middle/result.php";
+   let gradeUrl = "https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php";
    let body = new Object;
    body.fetchAllResultsByExam = val;
    let data = await postJsonData(gradeUrl,body); 
@@ -230,7 +249,7 @@ async function gradeExam(event){
 function renderGradeTable(data,exam){
     let table = document.querySelector('#gTable');
     table.innerHTML = '';
-    renderHeaders(['Adjusted Grade','Student','Question','Test Cases','Answer','Auto-Grade'],table);
+    renderHeaders(['Adjusted Grade','Student','Question','Answer','Auto-Grade', 'Adjusted Grade'],table);
     data[exam].map((row)=>{
         var tr = document.createElement('tr');
         table.appendChild(tr);
@@ -317,7 +336,6 @@ function onSubmit(event) {
           if (request.status == 200 && request.readyState == 4) {
             responseObject = JSON.parse(request.responseText);
             updateScreen();
-            console.log(responseObject);
           }
         };
        renderQuestions();
@@ -328,7 +346,6 @@ function applyFilters(event){
    category = document.getElementById('categorySelect').value;; 
    dificulty = document.getElementById('difficultySelect').value; 
    renderQuestions();
-   console.log(category,dificulty);
 }
 
 function visibilityChange(element) {
