@@ -11,7 +11,7 @@ function createExam(event){
        questions:getCheckedRows('qTable')
     }
     submitJsonData(
-        "https://web.njit.edu/~asc8/cs490/beta/middle/exam.php",
+        "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php",
         "POST",
         JSON.stringify(jsonData));
     renderExams();
@@ -26,7 +26,7 @@ function getCheckedRows(table){
         // test if a row is checked 
         if(row.getElementsByTagName('input')[0].checked){
             obj={};
-            obj.name = row.cells[2].innerHTML;
+            obj.name = row.cells[1].innerHTML;
             console.log(row.cells[1].value); 
             obj.score = row.cells[1].value;
             checkedRows.push(obj); 
@@ -51,7 +51,7 @@ function confirmGrades(event){
 
         }  
         submitJsonData(
-            'https://web.njit.edu/~asc8/cs490/beta/middle/result.php',
+            'https://web.njit.edu/~tg253/cs490/beta/front/resultproxy.php',
             'PUT',
             JSON.stringify(jsonData)
        )
@@ -76,7 +76,7 @@ function assignExam(event){
               }
               // fix to use middle endpoint  
               submitJsonData(
-                  "https://web.njit.edu/~tg253/490/examservice.php",
+                  "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php",
                   "POST",
                   JSON.stringify(jsonData));
             
@@ -87,12 +87,11 @@ function assignExam(event){
         exams.map((exam) =>{
             let jsonData = { examGraded: exam}; 
             submitJsonData(
-            'https://web.njit.edu/~tg253/490/examservice.php',
+            'https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php',
             'PUT',
              JSON.stringify(jsonData));
            }
         );
-        console.log('close exams');
     }
 
 }
@@ -114,9 +113,11 @@ function renderHeaders(headers, table){
 
 //inserts columns into row 
 function genColumn(item,row){
+    if (!Array.isArray(item)){    
     var tdElement = document.createElement('td');
     tdElement.innerHTML = item;
     row.appendChild(tdElement);
+}
 
 }
 
@@ -143,10 +144,7 @@ function genQuestion(row,table){
     var scoreElement = document.createElement('td');
     scoreElement.innerHTML = '<input type="text">';
     tr.appendChild(scoreElement);
-
-    console.log(row);
-    Object.values(row).forEach(value => {
-        // add an input for score                                                                                                 
+    Object.values(row).forEach(value => {                                                                                     
         genColumn(value,tr);
     });
 }
@@ -165,7 +163,7 @@ function renderOptions(exams){
 
 //renders table 
 async function renderQuestions(){
-    const questionUrl = 'https://web.njit.edu/~asc8/cs490/beta/middle/question.php';
+    const questionUrl = 'https://web.njit.edu/~tg253/CS490/beta/front/questionproxy.php';
     let table = document.querySelector('#qTable');
     table.innerHTML = '';
     renderHeaders(['Select','Update Score','Question','Description','Dificulty','Category','Score'],table);
@@ -175,7 +173,7 @@ async function renderQuestions(){
 
 //renders students                                                                                   
 async function renderStudents(){
-    const questionUrl = 'https://web.njit.edu/~tg253/490/userservice.php?role=student';
+    const questionUrl = 'https://web.njit.edu/~tg253/CS490/beta/front/userproxy.php?role=student';
     let table = document.querySelector('#sTable');
     table.innerHTML = "";
     renderHeaders(['Select','Student'],table);
@@ -186,19 +184,18 @@ async function renderStudents(){
 
 // renders table of exams by professor 
 async function renderExams(){
-  const examUrl = "https://web.njit.edu/~asc8/cs490/beta/middle/exam.php";
+  const examUrl = "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php";
   let table = document.querySelector('#aTable');
   table.innerHTML = "";
   renderHeaders(['Select','Exam'],table);
   let body = new Object; 
   body.professor = user; 
   response = await  postJsonData(examUrl,body);
-  console.log(response);
   response.exams.map((currentVal)=>{genAssign(currentVal,table);});
 }
 
 async function renderGrader(prof){
-    const profExamUrl = "https://web.njit.edu/~tg253/490/examservice.php?prof="
+    const profExamUrl = "https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php?prof="
     let form = document.querySelector('#gradeform');
     let getUrl = profExamUrl + prof; 
     let examsResponse = await getJsonData(getUrl);
@@ -212,12 +209,10 @@ async function gradeExam(event){
    let  val = selectBar.options[selectBar.selectedIndex].value; 
    selectedExam = val; 
    document.querySelector('#updateGrade').removeAttribute("hidden"); 
-   console.log(val);
    let gradeUrl = "https://web.njit.edu/~asc8/cs490/beta/middle/result.php";
    let body = new Object;
    body.fetchAllResultsByExam = val;
    let data = await postJsonData(gradeUrl,body); 
-   console.log(data);
    renderGradeTable(data,val);
  
 }
@@ -303,8 +298,7 @@ function onSubmit(event) {
         };
 
         var data = JSON.stringify(json);
-        console.log(data);
-
+       
         var request = new XMLHttpRequest();
         request.open("POST", "postQuestion.php", true);
         request.setRequestHeader("Content-type", "application/json");
@@ -320,15 +314,24 @@ function onSubmit(event) {
        renderQuestions();
       }
 
+function applyFilters(event){
+   event.preventDefault();
+   category = document.getElementById('categorySelect').value;; 
+   dificulty = document.getElementById('difficultySelect').value; 
+   renderQuestions();
+   console.log(category,dificulty);
+}
+
 // Adds function calls to html representation calls initial functions 
 function init(){
 
 
 
     //use to validate user role 
-    user = 'snape' ;// sessionStorage.getItem('user');
-    role = 'professor';//sessionStorage.getItem('role');
-    if (!(role === 'professor')){
+    user = sessionStorage.getItem('user');
+    role = sessionStorage.getItem('role');
+
+    if (!(role === 'Professor')){
         document.write('<h1>ACCESS DENIED</h1>');
     }
     document.getElementById('eForm').onsubmit = createExam;
@@ -336,12 +339,15 @@ function init(){
     document.getElementById('assignForm').onsubmit = assignExam;
     document.getElementById('gradeForm').onsubmit = gradeExam; 
     document.getElementById('updateGrade').onsubmit = confirmGrades; 
+    document.getElementById('fForm').onsubmit = applyFilters;
     renderQuestions();
     renderExams();
     renderStudents();
     renderGrader(user);
 }
 //globals 
+var category = 'none';
+var dificulty = 'none';
 var selectedExam = '';
 var user = ""; 
 var role = ""; 

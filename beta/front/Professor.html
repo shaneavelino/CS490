@@ -6,7 +6,7 @@
 <link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
 <link rel="stylesheet" type="text/css" href="student.css" />
 </head>
-<body>
+<body style="margin: 0px;" >
  <div class="header-container">
       <ul id="nav-bar" class="nav">
         <li class="nav-link" id="home-link"></li>
@@ -71,9 +71,18 @@
               <li>
                 <label for="category">Category:</label>
                 <select id="category">
-                  <option value="operations">Operations</option>
-                  <option value="turtle">Turtle</option>
-                  <option value="strings">Strings</option>
+                  <option value="lists">Lists</option>
+                  <option value="turtles">Turtles</option>
+                  <option value="if">If</option>
+                  <option value="ForLoops">For Loops</option>
+                  <option value="Def">Def</option>
+                  <option value="While">While</option>
+                  <option value="StringMethods">String Methods</option>
+                  <option value="Files">Files</option>
+                  <option value="Dictionaries">Dictionaries</option>
+		  <option value="Namespaces">Namespaces</option>
+                  <option value="Exceptions">Exceptions</option>
+                  <option value="Classes">Classes</option>
                 </select>
               </li>
               <li>
@@ -117,6 +126,34 @@
 
 <div id="examCreate">
     <h2>Create an Exam</h2>
+    
+    <h4>Apply Filters</h4> 
+    <form id="fForm">
+       <label for="difficultySelect">Difficulty</label>
+       <select id="difficultySelect">
+        <option value="none">None</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="Hard">Hard</option>
+       </select>
+        <label for="categorySelect">Category</label>
+       <select id="categorySelect">
+              <option value="none">None</option>
+              <option value="lists">Lists</option>
+              <option value="turtles">Turtles</option>
+              <option value="if">If</option>
+              <option value="ForLoops">For Loops</option>
+              <option value="Def">Def</option>
+              <option value="While">While</option>
+              <option value="StringMethods">String Methods</option>
+              <option value="Files">Files</option>
+              <option value="Dictionaries">Dictionaries</option>
+              <option value="Namespaces">Namespaces</option>
+              <option value="Exceptions">Exceptions</option>
+              <option value="Classes">Classes</option>
+       </select>
+      <input type='submit' value="Apply Filters"/>
+    </form><br/>
     <form id="eForm">
         <label for="examName">Name</label>
         <input type="text" id="examName"/><br/>

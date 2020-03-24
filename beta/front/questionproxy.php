@@ -1,13 +1,13 @@
 <?php 
 // php user proxy service for professor frontend 
 //uncomment for debug 
-ini_set('display_errors', 1); error_reporting(E_ALL);
+//ini_set('display_errors', 1); error_reporting(E_ALL);
 
 class proxyHandler {
 
 
     public function __construct(){
-        $this->url = "https://web.njit.edu/~asc8/cs490/beta/middle/user.php";
+        $this->url = "https://web.njit.edu/~asc8/cs490/beta/middle/question.php";
     }
 
     public function handleRequest($method, $body){
@@ -30,21 +30,17 @@ class proxyHandler {
 
     public function handleGet(){
         $retval = "";
-        if ($_GET["role"]){
-            $data = "{\"role\":\"" . $_GET["role"] . "\"}";
-            }
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $this->url);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data); 
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array(       
-                'Content-Type: application/json', 
-                'Content-Length: ' . strlen($data))       
-            );   
-            $retval = curl_exec($curl);
-            curl_close($curl);
-   
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $this->url);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data); 
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(       
+            'Content-Type: application/json', 
+            'Content-Length: ' . strlen($data))       
+        );   
+        $retval = curl_exec($curl);
+        curl_close($curl);
         return $retval;
     }
 
