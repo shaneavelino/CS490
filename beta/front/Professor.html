@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<html>
+  <head>
+    <title>Exam Portal</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="student.css" />
+  </head>
+
+  <body style="margin: 0;">
+    <div class="header-container">
+      <ul id="nav-bar" class="nav">
+        <li class="nav-link" id="home-link"></li>
+        <li class="nav-link" id="question-link">
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('questionCreate'));"
+            >Create a Question</a
+          >
+        </li>
+        <li class="nav-link" id="create-link">
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('examCreate'));"
+            >Create an Exam</a
+          >
+        </li>
+        <li class="nav-link" id="assign-link">
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('examAssign'));"
+            >Assign Exams</a
+          >
+        </li>
+        <li class="nav-link" id="grade-link">
+          <a
+            href="javascript:;"
+            id="nav-button"
+            onclick="visibilityChange(document.getElementById('gradeExam'));"
+            >Grade Exams</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div id="questionCreate" class="question-form-container">
+      <h2>Create a Question</h2>
+      <div class="question-form">
+        <form id="qForm" method="POST" action="#">
+          <ul class="flex-form">
+            <li>
+              <label for="name">Question:</label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Function name"
+              />
+            </li>
+            <li>
+              <label for="description">Description:</label>
+              <input
+                id="description"
+                type="text"
+                name="description"
+                placeholder="Description"
+              />
+            </li>
+            <li>
+              <label for="difficulty">Difficulty:</label>
+              <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </li>
+            <li>
+              <label for="category">Category:</label>
+              <select id="category">
+                <option value="operations">Operations</option>
+                <option value="turtle">Turtle</option>
+                <option value="strings">Strings</option>
+              </select>
+            </li>
+            <li>
+              <label for="testcase1">Test Case 1:</label>
+              <input
+                id="testCaseInput1"
+                type="text"
+                name="input1"
+                placeholder="Input 1"
+              />
+              <input
+                id="testCaseOutput1"
+                type="text"
+                name="output1"
+                placeholder="Output 1"
+              />
+            </li>
+            <li>
+              <label for="testcase2">Test Case 2:</label>
+              <input
+                id="testCaseInput2"
+                type="text"
+                name="input2"
+                placeholder="Input 2"
+              />
+              <input
+                id="testCaseOutput2"
+                type="text"
+                name="output2"
+                placeholder="Output 2"
+              />
+            </li>
+            <input type="submit" value="Submit" />
+          </ul>
+        </form>
+      </div>
+      <div>
+        <span id="insertSuccessText"></span>
+      </div>
+    </div>
+
+    <div id="examCreate" hidden>
+      <h2>Create an Exam</h2>
+      <form id="eForm">
+        <label for="examName">Name</label>
+        <input type="text" id="examName" /><br />
+        <input type="submit" value="Create" />
+        <table id="qTable"></table>
+      </form>
+    </div>
+
+    <div id="examAssign" hidden>
+      <h2>Assign and Close Exams</h2>
+      <form id="assignForm">
+        <input type="submit" value="Assign" />
+        <input type="submit" value="close" /><br />
+        <label for="sTable">Students</label>
+        <table id="sTable"></table>
+        <label for="aTable">Exams</label>
+        <table id="aTable"></table>
+      </form>
+    </div>
+
+    <div id="gradeExam" hidden>
+      <h2>Grade Exam</h2>
+      <form id="gradeForm">
+        <input type="submit" value="Grade Exam" />
+        <select id="selectBar" type="select"> </select>
+      </form>
+      <form id="updateGrade" hidden>
+        <input type="submit" value="submit Grades" />
+        <table id="gTable"></table>
+      </form>
+    </div>
+
+    <script src="Professor.js"></script>
+  </body>
+</html>
