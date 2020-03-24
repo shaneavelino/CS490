@@ -7,20 +7,14 @@ class proxyHandler {
 
 
     public function __construct(){
-        $this->url = "https://web.njit.edu/~asc8/cs490/beta/middle/exam.php";
+        $this->url = "https://web.njit.edu/~asc8/cs490/beta/middle/result.php";
     }
 
     public function handleRequest($method, $body){
         switch($method){
         case 'get':
             header('Content-Type: application/json');
-            if($_GET['prof']){
-                $body['professor'] = $_GET['prof'];
-                echo $this->handlePost(JSON_encode($body));
-
-            }else{
-                echo $this->handleGet($_GET);
-            }
+            echo $this->handleGet($_GET);
             break;
         case 'post':
             header('Content-Type: application/json');
