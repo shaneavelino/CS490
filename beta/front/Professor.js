@@ -168,7 +168,16 @@ async function renderQuestions(){
     table.innerHTML = '';
     renderHeaders(['Select','Update Score','Question','Description','Dificulty','Category','Score'],table);
     response = await  getJsonData(questionUrl);
-    response.map((currentVal)=>{genQuestion(currentVal,table);});
+    response.map((currentVal)=>{
+    console.log(currentVal.category);
+    if(dificulty !== 'none' && currentVal.difficulty !== dificulty){
+       return; 
+    }
+    if(category !== 'none' && currentVal.category !== category){
+      return;
+    }
+   
+     genQuestion(currentVal,table);});
 }
 
 //renders students                                                                                   
