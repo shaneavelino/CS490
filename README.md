@@ -4,10 +4,10 @@
 * due date
 
 ## March 24th 2020:
-* Convert text areas for:
-  * description
-  * student answer area
-  * instructor comments
+* Convert text fields for:
+  * Question description
+  * ~~Student answer area~~
+  * Instructor comments
 * CSS changes (font, borders, margins, etc) intuitive navigation
 * ~~Add log out button - kill session, jump to login.html~~
 * Python capture return output in grader.php
