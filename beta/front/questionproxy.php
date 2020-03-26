@@ -7,51 +7,28 @@ class proxyHandler {
 
 
     public function __construct(){
-        $this->url = "https://web.njit.edu/~asc8/cs490/beta/middle/exam.php";
+        $this->url = "https://web.njit.edu/~asc8/cs490/beta/middle/question.php";
     }
 
     public function handleRequest($method, $body){
         switch($method){
         case 'get':
             header('Content-Type: application/json');
-            if($_GET['prof']){
-                $body['professor'] = $_GET['prof'];
-                echo $this->handlePost(JSON_encode($body));
-
-            }else{
-                echo $this->handleGet($_GET);
-            }
+            echo $this->handleGet(); 
             break;
         case 'post':
+            $body = json_decode($body);
             header('Content-Type: application/json');
-            echo $this->handlePost($body);
-            break;
-        case 'put':
-            header('Content-Type: application/json');
-            echo $this->handlePost($body);
+            //echo $this->handlePost();
             break;
 
         default:
             http_response_code(405);
         } 
     }
-    public function handleGet($getParams){
-        $retval = "";
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $this->url . $getParams );
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data))
-        );
-        $retval = curl_exec($curl);
-        curl_close($curl);
-
-        return $retval;
-    } 
 
 
-    public function handlePost($data){
+    public function handleGet(){
         $retval = "";
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->url);
@@ -64,10 +41,8 @@ class proxyHandler {
         );   
         $retval = curl_exec($curl);
         curl_close($curl);
-   
         return $retval;
     }
-
 
 }
 
