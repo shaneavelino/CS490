@@ -10,7 +10,7 @@
   * instructor comments
 * CSS quality of life
 * Persisting
-* Add log out button - kill session, jump to login.html
+* ~~Add log out button - kill session, jump to login.html~~
 * python capture return output in grader.php
 * ability for professor to add a comment per question
 * points per sub item
