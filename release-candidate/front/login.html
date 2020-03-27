@@ -5,37 +5,37 @@
       var responseObject;
 
       function routeUser(role) {
-        if (role == 'Professor') {
+        if (role == "Professor") {
           window.location.replace(
-            'http://localhost:3000/release-candidate/front/Professor.html'
+            "http://localhost:3000/CS490/release-candidate/front/Professor.html"
           );
-        } else if (role == 'Student') {
+        } else if (role == "Student") {
           window.location.replace(
-            'http://localhost:3000/release-candidate/front/student.html'
+            "http://localhost:3000/CS490/release-candidate/front/student.html"
           );
         }
       }
 
       function updateScreen() {
-        if (responseObject.dbAuthenticated == 'true') {
-          span2.innerText = 'DB Login Successful';
-          if (responseObject.role == 'Professor') {
+        if (responseObject.dbAuthenticated == "true") {
+          span2.innerText = "DB Login Successful";
+          if (responseObject.role == "Professor") {
             routeUser(responseObject.role);
-          } else if (responseObject.role == 'Student') {
+          } else if (responseObject.role == "Student") {
             routeUser(responseObject.role);
           } else {
-            span2.innerText = 'Login Error';
+            span2.innerText = "Login Error";
           }
         } else {
-          span2.innerText = 'DB Login Unsuccessful';
+          span2.innerText = "DB Login Unsuccessful";
         }
       }
 
       function validation() {
         //1.Get Data
-        let userElement = document.getElementById('usr_txt');
+        let userElement = document.getElementById("usr_txt");
         let username = userElement.value;
-        let passElement = document.getElementById('pass_txt');
+        let passElement = document.getElementById("pass_txt");
         let password = passElement.value;
 
         //2. Convert to Json
@@ -45,15 +45,15 @@
         var data = JSON.stringify(json);
 
         var request = new XMLHttpRequest();
-        request.open('POST', 'curl.php', true);
-        request.setRequestHeader('Content-type', 'application/json');
+        request.open("POST", "curl.php", true);
+        request.setRequestHeader("Content-type", "application/json");
         request.send(data);
 
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             responseObject = JSON.parse(request.responseText);
-            sessionStorage.setItem('user', json.user);
-            sessionStorage.setItem('role', responseObject.role);
+            sessionStorage.setItem("user", json.user);
+            sessionStorage.setItem("role", responseObject.role);
             updateScreen();
             console.log(responseObject);
           }
