@@ -5,7 +5,7 @@
 
 ## March 24th 2020:
 * Convert text fields for:
-  * Question description
+  * ~~Question description~~
   * ~~Student answer area~~
   * Instructor comments
 * CSS changes (font, borders, margins, etc) intuitive navigation
