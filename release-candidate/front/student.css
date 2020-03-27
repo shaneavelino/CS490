@@ -5,6 +5,17 @@
   align-items: center;
 }
 
+.exam-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.current-exam {
+  
+}
+
 .nav {
   list-style-type: none;
   margin: 0;
@@ -31,10 +42,4 @@
 
 .active {
   background-color: steelblue;
-}
-
-.exam-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
 }
