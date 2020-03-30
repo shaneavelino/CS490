@@ -1,6 +1,6 @@
 <?php
 
-	$url = 'https://web.njit.edu/~asc8/cs490/beta/middle/result.php';
+	$url = 'https://web.njit.edu/~asc8/cs490/rc/middle/result.php';
 	$data = file_get_contents('php://input');
 
 	$curl = curl_init();
