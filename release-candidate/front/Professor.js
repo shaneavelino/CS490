@@ -3,7 +3,7 @@
 // logs user out and clears session
 function logout() {
   let homepage =
-    "http://localhost:3000/CS490/release-candidate/front/login.html";
+    "http://localhost:3000/release-candidate/front/login.html";
 
   window.location.href = homepage;
 
@@ -313,6 +313,7 @@ function onSubmit(event) {
   let testCaseOutput1 = document.getElementById("testCaseOutput1");
   let testCaseInput2 = document.getElementById("testCaseInput2");
   let testCaseOutput2 = document.getElementById("testCaseOutput2");
+  let questioncomments = document.getElementById("comments");
 
   let json = {
     name: questionName.value,
@@ -322,7 +323,8 @@ function onSubmit(event) {
     testCases: [
       { input: testCaseInput1.value, output: testCaseOutput1.value },
       { input: testCaseInput2.value, output: testCaseOutput2.value }
-    ]
+    ],
+    comments: questioncomments.value
   };
 
   var data = JSON.stringify(json);
