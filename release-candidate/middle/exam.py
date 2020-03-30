@@ -1,8 +1,5 @@
-def oddCount(aNumList):
-	result = 0
-	for i in aNumList:
-		if i%2 == 1:
-			result += 1
-	return result
+def areaOfRectangle(a,b):
+	area = a*b
+	return area
 
-print(oddCount([2,4,6,8]))
+print(areaOfRectangle(0,99))
