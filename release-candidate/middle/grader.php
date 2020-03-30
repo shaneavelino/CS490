@@ -15,11 +15,8 @@ require_once('./constants.php');
  * 2. Test the raw answer and exec the python code to ensure it passes 2 test cases (10 points)
 */
 
-// to store each itemized score into the put update for ser
-$testCaseResponseObject = array('input' => '', 'output' => '', 'studentOutput' => '', 'score' => '', 'comment' => '');
-$testCaseResponse = array();
 /** initialize the PUT request body into an associative array to send to Tom's PUT service */
-$put_request = array('user' => '', 'exam' => '', 'question' => '', 'autoGrade' => '', 'adjustedGrade' => '', 'testCaseResponse' => $testCaseResponse);
+$put_request = array('user' => '', 'exam' => '', 'question' => '', 'autoGrade' => '', 'adjustedGrade' => '', 'testCaseResponse' => array());
 
 // response for successful grading
 $grader_response = array('isFullExamGraded' => '');
@@ -37,6 +34,8 @@ class Grader {
   private $final;
   private $weight;
   private $testcase_amount;
+  private $student_result;
+  private $student_func;
 
   function set_question($question) {
     $this->question = $question;
@@ -94,13 +93,26 @@ class Grader {
     return $this->testcase_amount;
   }
 
-  // return a grade for the student's raw answer based on correctness
-  public function grade_func_name($question, $answer, $weight) {
-    $score = 0;
+  function set_student_result($student_result) {
+    $this->student_result = $student_result;
+  }
 
-    // the function name is 25% of the score of each question
-    $function_weight = ($weight * 25)/100;
-    
+  function get_student_result() {
+    return $this->student_result;
+  }
+
+  function set_student_func($student_func) {
+    $this->student_func = $student_func;
+  }
+
+  function get_student_func() {
+    return $this->student_func;
+  }
+
+  // return the student's function name output
+  public function get_student_named_function($question, $answer) {
+    $student_named_function = "";
+
     // python def keyword (3 chars)
     $def_keyword = substr($answer, 0, 3);
 
@@ -109,28 +121,30 @@ class Grader {
 
     // want to get the function name, def_FUNCTIONNAME()
     // its in between the space after def and the first open parenthesis
+    $student_named_function = substr($open_paren, strlen($def_keyword)+1);
+    
+    return $student_named_function;
+  }
+
+  // return a grade for the student's raw answer based on correctness
+  public function grade_func_name($student_func, $question, $weight) {
+    $score = 0;
+
+    // the function name is 25% of the score of each question
+    $function_weight = ($weight * 25)/100;
 
     // ++score if the question is correct, else don't add score
-    if ($question == substr($open_paren, strlen($def_keyword)+1)) {
+    if ($question == $student_func) {
       $score += $function_weight;
     } else {
       $score += 0;
     }
 
-    // store the student's output for the function name, store the score
-    // $testCaseResponseObject['studentOutput'] = substr($open_paren, strlen($def_keyword)+1);
-    // echo $testCaseResponseObject;
-
     return $score;
   }
 
-  // return grade for the student's raw answer based on test cases
-  public function grade_test_case($input, $output, $answer, $question, $weight, $testcase_amount) {
-    $score = 0;
-
-    // each question can have any # of test cases each so each question is worth 75% / n testCases
-    $test_case_weight = (($weight * 75)/100)/$testcase_amount;
-
+  // return the student's result from the python script
+  public function get_student_output($input, $question, $answer) {
     // create python text file from input answer, append the function name with the test case input
     $callFunction = "print(" . $question . "($input))";
     $pythonListing = "$answer\n\n$callFunction";
@@ -139,12 +153,21 @@ class Grader {
     // execute python text file
     // return result of file
     $student_result = shell_exec("python3 exam.py");
-    echo ' student result: ' . $student_result;
+
+    return trim($student_result);
+  }
+
+  // return grade for the student's raw answer based on test cases
+  public function grade_test_case($student_result, $output, $weight, $testcase_amount) {
+    $score = 0;
+
+    // each question can have any # of test cases each so each question is worth 75% / n testCases
+    $test_case_weight = (($weight * 75)/100)/$testcase_amount;
 
     // if testcase is correct, +75% of the question - needed to trim the newline from the python output
     if (trim($student_result) == $output) {
       $score += $test_case_weight;
-      echo 'student score: ' . $score;
+      //echo 'student score: ' . $score;
     } else {
       $score += 0;
     }
@@ -162,8 +185,6 @@ if (isset($json['exam']) && isset($json['user'])) {
   $score_controller->setUrl($score_endpoint);
   $score_curl = $score_controller->curl_get_request($score_controller->getUrl());
   $get_score_validation = json_decode($score_curl, true);
-  
-  //print_r($get_score_validation['questions'][0]);
 
   /** cURL backend exam using query parameter for the name front end will pass query name through json */
   $endpoint = RESULT_URL . '?' . http_build_query(array('exam' => $json['exam'], 'user' => $json['user']));
@@ -182,6 +203,10 @@ if (isset($json['exam']) && isset($json['user'])) {
     
     /** traverse through each result object for the question name and answer */
     for ($i = 0; $i < count($db_validation['results']); $i++) {
+
+      // initialize each testCaseResponse object into the testCaseResponse array 
+      $testCaseResponseObject = array();
+      $testCaseResponse = array();
       
       // final_score
       $final_question_score = 0;
@@ -192,19 +217,38 @@ if (isset($json['exam']) && isset($json['user'])) {
       $grader->set_weight($get_score_validation['questions'][$i]['score']);
       $grader->set_testcase_amount(count($get_score_validation['questions'][$i]['testCases']));
 
+      // get the student's answer to the function name to store in the update result service
+      $student_named = $grader->get_student_named_function($grader->get_question(), $grader->get_answer());
+      $grader->set_student_func($student_named);
+      $testCaseResponseObject['studentOutput'] = $student_named;
+      
+      // call the function grader and store the grade
+      $test_score = $grader->grade_func_name($grader->get_student_func(), $grader->get_question(), $grader->get_weight());
+      $final_question_score += $test_score;
+      $testCaseResponseObject['score'] = $test_score;
+      $testCaseResponse[] = $testCaseResponseObject;
+
       // set each question's test cases' input and output to the grader
       for ($j = 0; $j < count($db_validation['results'][$i]['testCases']); $j++) {
         $grader->set_test_input($db_validation['results'][$i]['testCases'][$j]['input']);
         $grader->set_test_output($db_validation['results'][$i]['testCases'][$j]['output']);
 
+        // get the student's output result
+        $student_output = $grader->get_student_output($grader->get_test_input(), $grader->get_question(), $grader->get_answer());
+        $grader->set_student_result($student_output);
+
         // call the test case grader and store the grade
-        $func_score = $grader->grade_test_case($grader->get_test_input(), $grader->get_test_output(), $grader->get_answer(), $grader->get_question(), $grader->get_weight(), $grader->get_testcase_amount());
+        $func_score = $grader->grade_test_case($grader->get_student_result(), $grader->get_test_output(), $grader->get_weight(), $grader->get_testcase_amount());
         $final_question_score += $func_score;
+
+        $testCaseResponseObject['input'] = $db_validation['results'][$i]['testCases'][$j]['input'];
+        $testCaseResponseObject['output'] = $db_validation['results'][$i]['testCases'][$j]['output'];
+        $testCaseResponseObject['studentOutput'] = $student_output;
+        $testCaseResponseObject['score'] = $func_score;
+
+        // add each test case itemization to the json array for the question
+        $testCaseResponse[] = $testCaseResponseObject;
       }
-      
-      // call the function grader and store the grade
-      $test_score = $grader->grade_func_name($grader->get_question(), $grader->get_answer(), $grader->get_weight());
-      $final_question_score += $test_score;
 
       // map to the body for put request
       $put_request['user'] = $db_validation['user'];
@@ -212,6 +256,7 @@ if (isset($json['exam']) && isset($json['user'])) {
       $put_request['question'] = $db_validation['results'][$i]['question'];
       $put_request['autograde'] = $final_question_score;
       $put_request['adjustedGrade'] = $final_question_score;
+      $put_request['testCaseResponse'] = $testCaseResponse;
       $put_json_request = json_encode($put_request);
 
       // Once the exam is graded, send the autoGrade and adjustedGrade along with the user, examname, and question
@@ -232,8 +277,8 @@ if (isset($json['exam']) && isset($json['user'])) {
   } else {
     echo 'STUDENT_EXAM error: could not find the results property.';
   }
-  // header('Content-Type: application/json');
-  // echo json_encode($grader_response);
+  header('Content-Type: application/json');
+  echo json_encode($grader_response);
 } else {
   echo 'POST error: fields \'user\' and \'exam\' were not properly passed.';
 }
