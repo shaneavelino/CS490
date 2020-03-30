@@ -10,7 +10,7 @@
   * Instructor comments
 * CSS changes (font, borders, margins, etc) intuitive navigation
 * ~~Add log out button - kill session, jump to login.html~~
-* Python capture return output in grader.php
+* ~~Python capture return output in grader.php~~
 * Ability for professor to add a comment per question
 * Itemize the points - professor can change score for any part of a question (name, test case 1 and 2)
 * Show the itemized point - student can see results for each part of a question
