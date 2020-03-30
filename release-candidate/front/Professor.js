@@ -323,8 +323,7 @@ function onSubmit(event) {
     testCases: [
       { input: testCaseInput1.value, output: testCaseOutput1.value },
       { input: testCaseInput2.value, output: testCaseOutput2.value }
-    ],
-    comments: questioncomments.value
+    ]
   };
 
   var data = JSON.stringify(json);
