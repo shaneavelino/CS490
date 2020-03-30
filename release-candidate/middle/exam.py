@@ -1,9 +1,8 @@
-def echo(x): 
-	print(x) 
+def oddCount(aNumList):
+	result = 0
+	for i in aNumList:
+		if i%2 == 1:
+			result += 1
+	return result
 
-string='pi'
-number=u'pi'
-if(string.isalpha()):
-	echo(string)
-if(number.isnumeric()):
-	echo(int(number))
+print(oddCount([2,4,6,8]))
