@@ -376,9 +376,12 @@
                   document.createTextNode(
                     properties +
                       responseObject["results"][i]["question"] +
-                      " [Your score: " +
+                      " [Your auto grade score: " +
                       responseObject["results"][i]["autoGrade"] +
-                      " points]"
+                      " points]" + 
+                      " [Your adjusted score: " +
+                     responseObject["results"][i]["adjustedGrade"] +
+                     " points]" 
                   )
                 );
                 li.appendChild(pQuestion);

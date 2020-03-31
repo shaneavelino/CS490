@@ -104,9 +104,10 @@ function assignExam(event){
         })});
     }
     if(formVal === 'close'){
-        let exams = getCheckedRows('aTable');
+        let exams = getCheckedStudents('aTable');
         exams.map((exam) =>{
-            let jsonData = { examGraded: exam}; 
+            console.log("exam:",exam.name);
+            let jsonData = { examGraded: exam.name}; 
             submitJsonData(
             'https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php',
             'PUT',
