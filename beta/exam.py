@@ -1,4 +1,9 @@
-def subtractThNum(i,j): 
-	print(i - j) 
+def echo(x): 
+	print(x) 
 
-subtractThNum(100,60)
+string='pi'
+number=u'pi'
+if(string.isalpha()):
+	echo(string)
+if(number.isnumeric()):
+	echo(int(number))

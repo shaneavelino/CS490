@@ -1,6 +1,6 @@
 <?php
 
-	//POST----------------
+	//GET----------------
 	$url = 'https://web.njit.edu/~asc8/cs490/beta/middle/exam.php';
 	$data = file_get_contents('php://input');
 
