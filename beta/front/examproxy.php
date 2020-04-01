@@ -14,6 +14,7 @@ class proxyHandler {
         switch($method){
         case 'get':
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
             if($_GET['prof']){
                 $body['professor'] = $_GET['prof'];
                 echo $this->handlePost(JSON_encode($body));
@@ -24,10 +25,12 @@ class proxyHandler {
             break;
         case 'post':
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
             echo $this->handlePost($body);
             break;
         case 'put':
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
             echo $this->handlePost($body);
             break;
 
