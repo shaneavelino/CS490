@@ -110,6 +110,7 @@ class Grader {
   }
 
   // return the student's function name output
+  // TODO: remove $question as input
   public function get_student_named_function($question, $answer) {
     $student_named_function = "";
 
@@ -143,6 +144,24 @@ class Grader {
     return $score;
   }
 
+  // return a grade for colon
+  public function grade_colon($answer) {
+    $score = 0;
+
+    $first_line = strstr($answer, "\n", true);
+
+    if (strpos($first_line, ":") !== false) {
+      $score += 5;
+    } else {
+      $score += 0;
+    }
+
+    return $score;
+  }
+
+  // return a grade for constraints
+  public function grade_constraint() {}
+
   // return the student's result from the python script
   public function get_student_output($input, $question, $answer) {
     // create python text file from input answer, append the function name with the test case input
@@ -152,7 +171,11 @@ class Grader {
     $pythonfile = file_put_contents('exam.py', $pythonListing);
     // execute python text file
     // return result of file
-    $student_result = shell_exec("python3 exam.py");
+    try {
+      $student_result = shell_exec("python3 exam.py");
+    } catch (Exception $e) {
+      echo 'python error', $e->getMessage();
+    }
 
     return trim($student_result);
   }
@@ -226,7 +249,23 @@ if (isset($json['exam']) && isset($json['user'])) {
       $test_score = $grader->grade_func_name($grader->get_student_func(), $grader->get_question(), $grader->get_weight());
       $final_question_score += $test_score;
       $testCaseResponseObject['score'] = $test_score;
+      
+      // add itemized function name score to response
       $testCaseResponse[] = $testCaseResponseObject;
+      
+      // test the colon
+      $test_colon = $grader->grade_colon($grader->get_answer());
+      $testCaseResponseObject['score'] = $test_colon;
+      if ($test_colon > 0) {
+        $testCaseResponseObject['studentOutput'] = 'colon located';
+      } else {
+        $testCaseResponseObject['studentOutput'] = 'colon missing';
+      }
+      
+      // add itemized colon score to response
+      $testCaseResponse[] = $testCaseResponseObject;
+    
+      // test the constraint
 
       // set each question's test cases' input and output to the grader
       for ($j = 0; $j < count($db_validation['results'][$i]['testCases']); $j++) {

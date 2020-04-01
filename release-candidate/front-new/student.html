@@ -3,6 +3,7 @@
     <title>Exam Portal</title>
     <link rel="stylesheet" type="text/css" href="student.css" />
   </head>
+
   <body onload="init()" style="margin: 0px;">
     <div class="header-container">
       <ul id="nav-bar" class="nav">
@@ -17,12 +18,24 @@
             >Results</a
           >
         </li>
+        <li class="nav-link" id="logout-link">
+          <a href="javascript:;" id="nav-button" onclick="logout();">Logout</a>
+        </li>
       </ul>
     </div>
     <div id="student-container" class="student-container"></div>
 
     <script type="text/javascript">
       var studentDiv = document.getElementById("student-container");
+
+      function logout() {
+        let homepage =
+          "http://localhost:3000/CS490/release-candidate/front/login.html";
+
+        window.location.href = homepage;
+
+        sessionStorage.clear();
+      }
 
       function init() {
         // validate login
@@ -146,7 +159,7 @@
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
-            let currExam = response[0]["exam"];
+            let currExam = response[5]["exam"];
             loadExam(currExam);
             // store the exam name in session storage for sending the student results
             sessionStorage.setItem("exam", currExam);
@@ -164,6 +177,9 @@
         request.open("POST", "getExam.php", true);
         request.setRequestHeader("Content-type", "application/json");
         request.send(data);
+
+        let rows = 5;
+        let cols = 40;
 
         request.onreadystatechange = function() {
           if (request.status == 200 && request.readyState == 4) {
@@ -220,17 +236,24 @@
               );
               li.appendChild(pDescription);
 
-              var labelAnswer = document.createElement("label");
-              labelAnswer.setAttribute("for", "answer");
-              labelAnswer.appendChild(document.createTextNode("Answer: "));
-              li.appendChild(labelAnswer);
+              // var labelAnswer = document.createElement("label");
+              // labelAnswer.setAttribute("for", "answer");
+              // labelAnswer.appendChild(document.createTextNode("Answer: "));
+              // li.appendChild(labelAnswer);
 
               // create input element for each question answer
-              var inputAnswer = document.createElement("input");
+              var inputAnswer = document.createElement("textarea");
               let iter = "answerInput" + i;
               inputAnswer.setAttribute("id", iter);
               inputAnswer.setAttribute("class", "answer-input");
+              inputAnswer.setAttribute("rows", rows);
+              inputAnswer.setAttribute("cols", cols);
+              inputAnswer.setAttribute(
+                "onkeydown",
+                "if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}"
+              );
               inputAnswer.setAttribute("type", "text");
+              inputAnswer.setAttribute("placeholder", "Your answer here");
               li.appendChild(inputAnswer);
 
               //console.log(response["questions"][i]["name"]);
@@ -270,7 +293,7 @@
 
             // each answer name from the form
             let listId = document.getElementById(questionId);
-            let answerId = listId.children[3].getAttribute("id");
+            let answerId = listId.children[2].getAttribute("id");
             let answerText = document.getElementById(answerId).value;
             resultsIter["answer"] = answerText;
 
@@ -279,6 +302,7 @@
           }
 
           var data = JSON.stringify(json);
+          console.log(data);
 
           var request = new XMLHttpRequest();
           request.open("POST", "postResult.php", true);
@@ -376,7 +400,6 @@
                   document.createTextNode(
                     properties +
                       responseObject["results"][i]["question"] +
-
                       " [Your autograde score: " +
                       responseObject["results"][i]["autoGrade"] +
                       " points]" +
