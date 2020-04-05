@@ -1,0 +1,99 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="login.css" />
+    <script>
+      var responseObject;
+
+      function routeUser(role) {
+        if (role == "Professor") {
+
+          window.location.href =
+            "http://localhost:3000/release-candidate/front-new/Professor.html";
+            //"https://web.njit.edu/~tg253/CS490/beta/front/Professor.html
+            //http://localhost:3000/release-candidate/front-new/login.html
+
+        } else if (role == "Student") {
+          window.location.href =
+            "https://web.njit.edu/~tg253/CS490/beta/front/student.html";
+        }
+      }
+
+      function updateScreen() {
+        if (responseObject.dbAuthenticated == "true") {
+          span2.innerText = "DB Login Successful";
+          if (responseObject.role == "Professor") {
+            routeUser(responseObject.role);
+          } else if (responseObject.role == "Student") {
+            routeUser(responseObject.role);
+          } else {
+            span2.innerText = "Login Error";
+          }
+        } else {
+          span2.innerText = "DB Login Unsuccessful";
+        }
+      }
+
+      function validation() {
+        //1.Get Data
+        let userElement = document.getElementById("usr_txt");
+        let username = userElement.value;
+        let passElement = document.getElementById("pass_txt");
+        let password = passElement.value;
+
+        //2. Convert to Json
+        let json = { user: username, password: password };
+
+        //3. Send to PHP
+        var data = JSON.stringify(json);
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "curl.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            responseObject = JSON.parse(request.responseText);
+            sessionStorage.setItem("user", json.user);
+            sessionStorage.setItem("role", responseObject.role);
+            updateScreen();
+            console.log(responseObject);
+          }
+        };
+        //4. Post it to Shane with Curl
+        //asc8 foobar
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="login-container">
+      <div class="header">Login Page</div>
+      <div class="form-container">
+        <form
+          method="POST"
+          action="#"
+          onsubmit="event.preventDefault();validation();"
+        >
+          <input
+            id="usr_txt"
+            type="text"
+            name="username"
+            placeholder="Username"
+          />
+          <input
+            id="pass_txt"
+            name="password"
+            type="password"
+            placeholder="Password"
+          />
+          <input type="submit" value="Submit" />
+        </form>
+      </div>
+      <div class="validation-container">
+        <span id="span1" class="span1"></span>
+        <span id="span2" class="span2"></span>
+      </div>
+    </div>
+  </body>
+</html>
