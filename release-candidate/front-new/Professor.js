@@ -315,6 +315,15 @@ function onSubmit(event) {
         let testCaseInput2 = document.getElementById("testCaseInput2");
         let testCaseOutput2 = document.getElementById("testCaseOutput2");
 
+        var num;
+        var input;
+        var output;
+        for(num = 3; num < 7; num++)
+        {
+          input[num] = document.getElementById("testCaseInput"+num);
+          output[num] = document.getElementById("testCaseInput"+num);
+        }
+
         let json = {
           name: questionName.value,
           description: questionDescription.value,
@@ -322,7 +331,11 @@ function onSubmit(event) {
           category: questionCategory.value,
           testCases: [
             { input: testCaseInput1.value, output: testCaseOutput1.value },
-            { input: testCaseInput2.value, output: testCaseOutput2.value }
+            { input: testCaseInput2.value, output: testCaseOutput2.value },
+            { input: input[3].value, output: output[3].value },
+            { input: input[4].value, output: output[4].value },
+            { input: input[5].value, output: output[5].value },
+            { input: input[6].value, output: output[6].value }
           ]
         };
 
