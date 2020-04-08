@@ -375,6 +375,15 @@ function visibilityChange(element) {
 // Adds function calls to html representation calls initial functions 
 function init(){
 
+  //Hide Extra Cases
+  var num;
+  var extracases;
+  for(num = 3; num < 7; num++)
+  {
+    extracases = document.getElementById("case"+num);
+    extracases.style.display = "none";
+  }
+
 
 
     //use to validate user role 
@@ -395,7 +404,22 @@ function init(){
     renderStudents();
     renderGrader(user);
 }
+
+function addcase(){
+
+  if(counter >= 7)
+  {
+    return 0;
+  }
+  var newcase = document.getElementById("case" + counter);
+  newcase.style.display = "block";
+  counter++;
+ 
+
+}
+
 //globals 
+var counter = 3;
 var category = 'none';
 var dificulty = 'none';
 var selectedExam = '';
