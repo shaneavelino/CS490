@@ -1,0 +1,392 @@
+<html>
+  <head>
+    <title>Exam Portal</title>
+    <link rel="stylesheet" type="text/css" href="student.css" />
+  </head>
+  <body onload="init()" style="margin: 0px;">
+    <div class="header-container">
+      <ul id="nav-bar" class="nav">
+        <li class="nav-link" id="home-link"></li>
+        <li class="nav-link" id="exam-link">
+          <a href="javascript:;" id="nav-button" onclick="renderExam();"
+            >Exams</a
+          >
+        </li>
+        <li class="nav-link" id="result-link">
+          <a href="javascript:;" id="nav-button" onclick="renderResults();"
+            >Results</a
+          >
+        </li>
+      </ul>
+    </div>
+    <div id="student-container" class="student-container">
+      <div id="exam" class="exam-container">
+        <div id="exam-form" class="exam-form"></div>
+      </div>
+      <div id="result" class="result-container">
+        <div id="exam-results" class="exam-results"></div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var responseObject;
+
+      function init() {
+        // validate login, prevent direct route to student.html
+        if (!(sessionStorage.role == "Student")) {
+          document.write("<h1>ACCESS DENIED</h1>");
+        } else {
+          getUser();
+
+          // create the home div on load
+          var studentDiv = document.getElementById("student-container");
+          var homeDiv = document.createElement("div");
+          homeDiv.setAttribute("id", "home");
+          homeDiv.setAttribute("class", "home-container");
+          studentDiv.appendChild(homeDiv);
+
+          renderHome();
+        }
+      }
+
+      function renderHome() {
+        // create a welcome message
+        var home = document.getElementById("home");
+        var h2 = document.createElement("h2");
+        h2.setAttribute("class", "welcome-message");
+        h2.setAttribute("id", "welcome-rendered");
+        h2.appendChild(document.createTextNode("Welcome to the Exam Portal!"));
+
+        var homeRendered = document.getElementById("welcome-rendered");
+        if (document.body.contains(homeRendered)) {
+          location.reload();
+        } else {
+          home.appendChild(h2);
+        }
+      }
+
+      function renderExam() {
+        var examRendered = document.getElementById("exam-rendered");
+        var homeRendered = document.getElementById("welcome-rendered");
+        var resultsRendered = document.getElementById("results-rendered");
+
+        var studentDiv = document.getElementById("student-container");
+        var examDiv = document.createElement("div");
+        examDiv.setAttribute("id", "exam");
+        examDiv.setAttribute("class", "exam-container");
+        studentDiv.appendChild(examDiv);
+
+        if (document.body.contains(examRendered)) {
+          alert("You already have an active exam open");
+        } else {
+          getExam();
+        }
+
+        if (document.body.contains(homeRendered)) {
+          homeRendered.remove();
+        } else {
+          console.log("exam already loaded");
+        }
+      }
+
+      function renderResults() {
+        var resultsRendered = document.getElementById("results-rendered");
+        var homeRendered = document.getElementById("welcome-rendered");
+        var examRendered = document.getElementById("exam-form");
+
+        if (document.body.contains(resultsRendered)) {
+          location.reload();
+        } else {
+          getResults();
+        }
+
+        if (document.body.contains(examRendered)) {
+          examRendered.remove();
+        } else {
+          getExam();
+        }
+
+        if (document.body.contains(homeRendered)) {
+          homeRendered.remove();
+        } else {
+          console.log("results already loaded");
+        }
+      }
+
+      function updateScreen() {
+        if (responseObject.examResultsInserted == "true") {
+          autoGrade();
+        }
+      }
+
+      function getUser() {
+        let user = sessionStorage.user;
+        let message = user.toUpperCase();
+
+        var a = document.createElement("a");
+        a.setAttribute("href", "javascript:;");
+        //a.setAttribute("class", "active");
+        a.setAttribute("id", "nav-button");
+        a.setAttribute("onclick", "renderHome();");
+        a.appendChild(document.createTextNode(message));
+
+        document.getElementById("home-link").appendChild(a);
+      }
+
+      // get the current open exam for the student logged on
+      function getExam() {
+        let user = sessionStorage.user;
+        let json = { fetchExamsByUser: user };
+        let data = JSON.stringify(json);
+
+        let request = new XMLHttpRequest();
+        request.open("POST", "getExam.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            let response = JSON.parse(request.responseText);
+            let examToTake = response[2]["exam"];
+            loadExam(examToTake);
+            // store the exam name in session storage for sending the student results
+            sessionStorage.setItem("exam", examToTake);
+          }
+        };
+      }
+
+      // retrieve exam and render exam form
+      function loadExam(examToTake) {
+        let exam = examToTake;
+        let json = { examName: exam };
+        var data = JSON.stringify(json);
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "getExam.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            var response = JSON.parse(request.responseText);
+            console.log(response);
+
+            var examTitle = document.createElement("h2");
+            examTitle.setAttribute("id", "exam-rendered");
+            examTitle.appendChild(
+              document.createTextNode(response["name"].toUpperCase())
+            );
+            document.getElementById("exam").appendChild(examTitle);
+
+            // create a form for the exam
+            var form = document.createElement("form");
+            form.setAttribute("method", "POST");
+            form.setAttribute("action", "#");
+            form.setAttribute(
+              "onsubmit",
+              "event.preventDefault();submitExam();"
+            );
+
+            var properties = ["Function name: "];
+
+            var capitalize = function(s) {
+              return s.charAt(0).toUpperCase() + s.slice(1);
+            };
+
+            // Create a list with the exam questions
+            var ol = document.createElement("ol");
+            ol.setAttribute("id", "current-exam");
+            for (var i = 0; i < response["questions"].length; i++) {
+              var li = document.createElement("li");
+              // set the list attribute id to the question name so we can send it back to the result service
+              li.setAttribute("id", response["questions"][i]["name"]);
+              var pQuestion = document.createElement("p");
+
+              pQuestion.appendChild(
+                document.createTextNode(
+                  properties +
+                    response["questions"][i]["name"] +
+                    " [" +
+                    response["questions"][i]["score"] +
+                    " points]"
+                )
+              );
+              li.appendChild(pQuestion);
+
+              var pDescription = document.createElement("p");
+              pDescription.appendChild(
+                document.createTextNode(
+                  capitalize(response["questions"][i]["description"])
+                )
+              );
+              li.appendChild(pDescription);
+
+              var labelAnswer = document.createElement("label");
+              labelAnswer.setAttribute("for", "answer");
+              labelAnswer.appendChild(document.createTextNode("Answer: "));
+              li.appendChild(labelAnswer);
+
+              // create input element for each question answer
+              var inputAnswer = document.createElement("input");
+              let iter = "answerInput" + i;
+              inputAnswer.setAttribute("id", iter);
+              inputAnswer.setAttribute("class", "answer-input");
+              inputAnswer.setAttribute("type", "text");
+              li.appendChild(inputAnswer);
+
+              //console.log(response["questions"][i]["name"]);
+              ol.appendChild(li);
+            }
+
+            var submitButton = document.createElement("input");
+            submitButton.setAttribute("type", "submit");
+            submitButton.setAttribute("value", "Submit");
+            ol.appendChild(submitButton);
+
+            form.appendChild(ol);
+            console.log(form);
+            document.getElementById("exam").appendChild(form);
+          }
+        };
+      }
+
+      // submit the exam to middle
+      function submitExam() {
+        var submitFinal = confirm(
+          "Are you sure you want to submit your exam? You cannot undo this option."
+        );
+        if (submitFinal == true) {
+          let json = {
+            user: sessionStorage.user,
+            exam: sessionStorage.exam,
+            results: []
+          };
+
+          // loop through the form order list minus the last item because its the submit button
+          const currExam = document.getElementById("current-exam");
+          for (let i = 0; i < currExam.children.length - 1; i++) {
+            var resultsIter = { question: "", answer: "" };
+            // each question name from the form
+            let questionId = currExam.children[i].getAttribute("id");
+
+            // append it to the json
+            resultsIter["question"] = questionId;
+
+            // each answer name from the form
+            let listId = document.getElementById(questionId);
+            let answerId = listId.children[3].getAttribute("id");
+            let answerText = document.getElementById(answerId).value;
+            resultsIter["answer"] = answerText;
+
+            // push the answer per question into the final result array to middle
+            json["results"].push(resultsIter);
+          }
+
+          var data = JSON.stringify(json);
+
+          var request = new XMLHttpRequest();
+          request.open("POST", "postResult.php", true);
+          request.setRequestHeader("Content-type", "application/json");
+          request.send(data);
+
+          request.onreadystatechange = function() {
+            if (request.status == 200 && request.readyState == 4) {
+              responseObject = JSON.parse(request.responseText);
+              console.log(responseObject);
+              updateScreen();
+            }
+          };
+        }
+      }
+
+      function autoGrade() {
+        let json = {
+          user: sessionStorage.user,
+          exam: sessionStorage.exam
+        };
+
+        var data = JSON.stringify(json);
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "callGrader.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            let response = JSON.parse(request.responseText);
+            console.log(response);
+          }
+        };
+      }
+
+      function getResults() {
+        let json = {
+          user: sessionStorage.user,
+          exam: sessionStorage.exam
+        };
+
+        var data = JSON.stringify(json);
+
+        let request = new XMLHttpRequest();
+        request.open("POST", "postResult.php", true);
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(data);
+
+        request.onreadystatechange = function() {
+          if (request.status == 200 && request.readyState == 4) {
+            let responseObject = JSON.parse(request.responseText);
+            console.log(responseObject);
+
+            var properties = ["Function name: "];
+
+            // check if exam is graded
+            if ((responseObject["graded"] = "1")) {
+              var graded = document.createElement("h2");
+              graded.setAttribute("id", "results-rendered");
+              graded.appendChild(document.createTextNode("RESULTS:"));
+              document.getElementById("exam-results").appendChild(graded);
+
+              let olresult = document.createElement("ol");
+              olresult.setAttribute("id", "current-exam-results");
+              for (var i = 0; i < responseObject["results"].length; i++) {
+                var li = document.createElement("li");
+
+                li.setAttribute("id", responseObject["results"][i]["question"]);
+                var pQuestion = document.createElement("p");
+
+                pQuestion.appendChild(
+                  document.createTextNode(
+                    properties +
+                      responseObject["results"][i]["question"] +
+                      " [Your score: " +
+                      responseObject["results"][i]["autoGrade"] +
+                      " points]"
+                  )
+                );
+                li.appendChild(pQuestion);
+                olresult.appendChild(li);
+              }
+
+              document.getElementById("exam-results").appendChild(olresult);
+            } else {
+              var ungraded = document.createElement("h2");
+              ungraded.appendChild(
+                document.createTextNode(
+                  "RESULTS NOT GRADED. PLEASE CHECK BACK LATER."
+                )
+              );
+              document.getElementById("exam-results").appendChild(ungraded);
+            }
+
+            // show question
+
+            // show student answer
+            // show adjusted grade (final grade for the question)
+            // show running total score
+          }
+        };
+      }
+    </script>
+  </body>
+</html>
