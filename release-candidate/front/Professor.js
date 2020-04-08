@@ -246,6 +246,35 @@ async function gradeExam(event){
    renderGradeTable(data,val);
  
 }
+// render grade details 
+function renderGradeDetails(gradeDetails,tr){
+   
+   var subTable = document.createElement('table');
+   tr.appendChild(subTable);
+   var subTr = document.createElement('tr');
+   subTable.appendChild(subTr);
+   var thElement = document.createElement('th');
+   thElement.innerHTML = ("Partial Score");
+   subTr.appendChild(thElement);
+   var thElement = document.createElement('th');
+   thElement.innerHTML = ("Comments");
+   subTr.appendChild(thElement);
+
+   gradeDetails.map((detail) => {
+       var subTr = document.createElement('tr');
+       subTable.appendChild(subTr);;
+       var tdElement = document.createElement('td');
+       tdElement.innerHTML = ("<input type='text' value="+detail.score+">");
+       subTr.appendChild(tdElement);
+       var tdElement = document.createElement('td');
+       tdElement.innerHTML = ("<textarea rows='4' cols='50'>Instructor comments</textarea>");
+       subTr.appendChild(tdElement);
+   });
+   return; 
+
+
+}
+
 
 // render grade table 
 function renderGradeTable(data,exam){
@@ -262,6 +291,10 @@ function renderGradeTable(data,exam){
            genColumn(value,tr);
 
        })
+       // breakdown of results 
+       var subTableRow = document.createElement('tr');
+       renderGradeDetails(row.testCaseResponse,subTableRow);
+       table.appendChild(subTableRow);
     })
  
 }
