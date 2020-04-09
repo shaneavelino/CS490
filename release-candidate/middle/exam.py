@@ -1,5 +1,13 @@
-def areaOfRectangle(a,b):
-	area = a*b
-	return area
+def operation(op, a, b):
+	if op == '+':
+		return a + b
+	elif op == '-':
+		return a - b
+	elif op == '*':
+		return a * b
+	elif op == '/':
+		return a / b
+	else:
+		return -1
 
-print(areaOfRectangle(0,99))
+print(operation("0", 2, 6))

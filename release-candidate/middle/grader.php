@@ -16,7 +16,7 @@ require_once('./constants.php');
 */
 
 /** initialize the PUT request body into an associative array to send to Tom's PUT service */
-$put_request = array('user' => '', 'exam' => '', 'question' => '', 'autoGrade' => '', 'adjustedGrade' => '', 'testCaseResponse' => array());
+$put_request = array('user' => '', 'exam' => '', 'question' => '', 'autograde' => '', 'adjustedGrade' => '', 'testCaseResponse' => array());
 
 // response for successful grading
 $grader_response = array('isFullExamGraded' => '');
@@ -109,6 +109,14 @@ class Grader {
     return $this->student_func;
   }
 
+  function set_constraint($constraint) {
+    $this->constraint = $constraint;
+  }
+
+  function get_constraint() {
+    return $this->constraint;
+  }
+
   // return the student's function name output
   // TODO: remove $question as input
   public function get_student_named_function($question, $answer) {
@@ -151,7 +159,7 @@ class Grader {
     $first_line = strstr($answer, "\n", true);
 
     if (strpos($first_line, ":") !== false) {
-      $score += 5;
+      $score += 2;
     } else {
       $score += 0;
     }
@@ -160,7 +168,17 @@ class Grader {
   }
 
   // return a grade for constraints
-  public function grade_constraint() {}
+  public function grade_constraint($constraint, $answer) {
+    $score = 0;
+
+    if (strpos($answer, $constraint) !== false) {
+      $score += 2;
+    } else {
+      $score += 0;
+    }
+
+    return $score;
+  }
 
   // return the student's result from the python script
   public function get_student_output($input, $question, $answer) {
@@ -238,6 +256,7 @@ if (isset($json['exam']) && isset($json['user'])) {
       $grader->set_question($db_validation['results'][$i]['question']);
       $grader->set_answer($db_validation['results'][$i]['answer']);
       $grader->set_weight($get_score_validation['questions'][$i]['score']);
+      $grader->set_constraint($db_validation['results'][$i]['questionConstraint']);
       $grader->set_testcase_amount(count($get_score_validation['questions'][$i]['testCases']));
 
       // get the student's answer to the function name to store in the update result service
@@ -266,6 +285,16 @@ if (isset($json['exam']) && isset($json['user'])) {
       $testCaseResponse[] = $testCaseResponseObject;
     
       // test the constraint
+      $test_constraint = $grader->grade_constraint($grader->get_constraint(), $grader->get_answer());
+      $testCaseResponseObject['score'] = $test_constraint;
+      if ($test_constraint > 0) {
+        $testCaseResponseObject['studentOutput'] = 'constraint found';
+      } else {
+        $testCaseResponseObject['studentOutput'] = 'constraint missing';
+      }
+
+      // add itemized constraint score to response
+      $testCaseResponse[] = $testCaseResponseObject;
 
       // set each question's test cases' input and output to the grader
       for ($j = 0; $j < count($db_validation['results'][$i]['testCases']); $j++) {
@@ -304,7 +333,6 @@ if (isset($json['exam']) && isset($json['user'])) {
       $put_controller->setUrl($put_exam_result);
       $put_controller->setBody($put_json_request);
       $put_curl = $put_controller->curl_put_request($put_controller->getUrl(), $put_controller->getBody());
-      
       // validate each question was graded successfully
       $put_validation = json_decode($put_curl, true);
       if ($put_validation['update'] == 'true') {
