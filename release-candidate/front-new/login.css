@@ -13,7 +13,10 @@ input
 
 
 
-
+.validation-container
+{
+  margin-top:5%;
+}
 
 .login-container {
   display: flex;
@@ -21,7 +24,7 @@ input
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  color:white;
+  color:black;
   margin-top: 15%;
 }
 
@@ -83,4 +86,5 @@ input[type="password"]:focus {
 .span2 {
   font-family: "Courier New", Courier, monospace;
   font-weight: bold;
+  color:black;
 }
