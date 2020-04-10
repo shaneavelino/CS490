@@ -1,9 +1,28 @@
+body
+{
+  background-image:url("loginbackground.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+input
+{
+  display: block;
+}
+
+
+
+
+
 .login-container {
   display: flex;
   height: 300px;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  color:white;
+  margin-top: 15%;
 }
 
 .header {
@@ -34,7 +53,7 @@ input[type="password"] {
 input[type="submit"] {
   width: 150px;
   padding: 5px;
-  margin: 10px;
+  margin: auto;
   background-color: slategray;
   border: none;
   border-radius: 2px;
