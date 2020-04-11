@@ -1,3 +1,15 @@
+body
+{
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.flex-form
+{
+  
+}
+
 .student-container {
   display: flex;
   flex-direction: column;
@@ -10,7 +22,8 @@
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: slategray;
+  background:url("navbackground.png")
+  
 }
 
 .nav-link {
@@ -27,6 +40,10 @@
 
 .nav-link a:hover {
   background-color: gray;
+  border-radius: 25px;
+  background:black;
+  padding: 14px; 
+
 }
 
 .active {
@@ -37,4 +54,9 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+}
+
+.question-form-container
+{
+    margin-left: 5%;
 }

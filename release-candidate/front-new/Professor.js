@@ -305,6 +305,7 @@ function updateScreen() {
 
 //handle question submit 
 function onSubmit(event) {
+  alert('hi');
         event.preventDefault();
         let questionName = document.getElementById("name");
         let questionDescription = document.getElementById("description");
@@ -314,30 +315,26 @@ function onSubmit(event) {
         let testCaseOutput1 = document.getElementById("testCaseOutput1");
         let testCaseInput2 = document.getElementById("testCaseInput2");
         let testCaseOutput2 = document.getElementById("testCaseOutput2");
+        let questionconstraint = document.getElementById("constraint");
 
-        var num;
-        var input;
-        var output;
-        for(num = 3; num < 7; num++)
-        {
-          input[num] = document.getElementById("testCaseInput"+num);
-          output[num] = document.getElementById("testCaseInput"+num);
-        }
 
         let json = {
           name: questionName.value,
           description: questionDescription.value,
           difficulty: questionDifficulty.value,
+          questionconstraint: questionconstraint.value,
           category: questionCategory.value,
-          testCases: [
-            { input: testCaseInput1.value, output: testCaseOutput1.value },
-            { input: testCaseInput2.value, output: testCaseOutput2.value },
-            { input: input[3].value, output: output[3].value },
-            { input: input[4].value, output: output[4].value },
-            { input: input[5].value, output: output[5].value },
-            { input: input[6].value, output: output[6].value }
-          ]
+          testCases: []
         };
+
+
+        var results = {input:'', output:''};
+        json['testCases'].push(results);
+        console.log(json);
+
+
+       // { input: testCaseInput1.value, output: testCaseOutput1.value },
+       // { input: testCaseInput2.value, output: testCaseOutput2.value }
 
         var data = JSON.stringify(json);
        
@@ -418,15 +415,30 @@ function init(){
     renderGrader(user);
 }
 
-function addcase(){
-
-  if(counter >= 7)
+function addcase()
+{
+  if(counter < 7)
   {
-    return 0;
+
+    var list = document.createElement("li");
+    var label = document.createElement("label");
+    var inputCase = document.createElement("input");
+    var outputCase = document.createElement("input");
+
+    label.setAttribute("for","testcase"+counter);
+    label.innerText = "Test Case "+counter+":";
+
+    inputCase.setAttribute("id","testCaseInput"+counter);inputCase.setAttribute("type","text");
+    inputCase.setAttribute("placeholder","Input "+counter);
+    outputCase.setAttribute("id","testCaseOutput "+counter);outputCase.setAttribute("type","text");
+    outputCase.setAttribute("placeholder","Output "+counter);
+
+    list.appendChild(label);list.appendChild(inputCase);list.appendChild(outputCase);
+    
+    document.body.appendChild(list);
+
+    counter++;
   }
-  var newcase = document.getElementById("case" + counter);
-  newcase.style.display = "block";
-  counter++;
  
 
 }
