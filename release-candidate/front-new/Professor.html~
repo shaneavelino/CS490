@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<html>
+<head>
+<title>Exam Portal</title>
+<link rel='shortcut icon' type='image/x-icon' href='favicon.ico' />
+</head>
+<body>
+
+<h1>Professors Page</h1>
+<p>Welcome Professor **** placeholder for Professor name****</p>
+<div id="questionCreate">
+    <h2>Create a Question</h2>
+    <form id="qForm">
+        <label for="qname">Name</label> 
+        <input type="text" id="qname"/><br/>
+        <label for="qdesc">Description</label>
+        <input type="text" id="qdesc"/><br/>
+        <label for="qdiff">Dificulty</label>
+        <input type="text" id="qdiff"/><br/>
+        <label for="qcat">Category</label>
+        <input type="text" id="qcat"/><br/>
+        <label for="qscore">Score</label>
+        <input type="text" id="qscore"/><br/>
+        <label for="qtestcase">Testcase</label>
+        <input type="text" id="qtestcase"/><br/>
+
+
+<br/>
+        <input type="submit" value="Create">
+
+    </form>
+</div>
+
+<div id="examCreate">
+
+
+    <h2>Create an Exam</h2>
+    <form id="eForm">
+        <label for="examName">Name</label>
+        <input type="text" id="examName"/><br/>
+
+        <input type="submit" value="Create">
+        <table id="qTable">
+        </table>  
+    </form>
+</div>
+
+<script src="Professor.js"></script> 
+</body>
+</html> 

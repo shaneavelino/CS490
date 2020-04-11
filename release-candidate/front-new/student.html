@@ -3,6 +3,7 @@
     <title>Exam Portal</title>
     <link rel="stylesheet" type="text/css" href="student.css" />
   </head>
+
   <body onload="init()" style="margin: 0px;">
     <div class="header-container">
       <ul id="nav-bar" class="nav">
@@ -29,7 +30,7 @@
 
       function logout() {
         let homepage =
-          'http://localhost:3000/release-candidate/front/login.html';
+          'http://localhost:3000/release-candidate/front-new/login.html';
 
         window.location.href = homepage;
 
@@ -159,7 +160,7 @@
         request.onreadystatechange = function () {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
-            let currExam = response[3]['exam'];
+            let currExam = response[2]['exam'];
             loadExam(currExam);
             // store the exam name in session storage for sending the student results
             sessionStorage.setItem('exam', currExam);
@@ -178,8 +179,8 @@
         request.setRequestHeader('Content-type', 'application/json');
         request.send(data);
 
-        let rows = 5;
-        let cols = 40;
+        let rows = 10;
+        let cols = 80;
 
         request.onreadystatechange = function () {
           if (request.status == 200 && request.readyState == 4) {
@@ -212,10 +213,12 @@
             // Create a list with the exam questions
             var ol = document.createElement('ol');
             ol.setAttribute('id', 'current-exam');
+            ol.setAttribute('class', 'current-exam-list');
             for (var i = 0; i < response['questions'].length; i++) {
               var li = document.createElement('li');
               // set the list attribute id to the question name so we can send it back to the result service
               li.setAttribute('id', response['questions'][i]['name']);
+              li.setAttribute('class', 'exam-list-item');
               var pQuestion = document.createElement('p');
 
               pQuestion.appendChild(
@@ -387,30 +390,82 @@
 
               var graded = document.createElement('h2');
               graded.setAttribute('id', 'results-rendered');
-              graded.appendChild(document.createTextNode('RESULTS:'));
+              graded.appendChild(
+                document.createTextNode(
+                  sessionStorage.exam.toUpperCase() + ' RESULTS:'
+                )
+              );
               document.getElementById('results-container').appendChild(graded);
 
               let olresult = document.createElement('ol');
               olresult.setAttribute('id', 'current-exam-results');
-              for (var i = 0; i < responseObject['results'].length; i++) {
+              olresult.setAttribute('class', 'results-ordered-list');
+
+              let resultsObj = responseObject['results'];
+              for (var i = 0; i < resultsObj.length; i++) {
                 var li = document.createElement('li');
 
-                li.setAttribute('id', responseObject['results'][i]['question']);
+                li.setAttribute('id', resultsObj[i]['question']);
+                li.setAttribute('class', 'result-list-item');
                 var pQuestion = document.createElement('p');
+                pQuestion.setAttribute('class', 'question-score-header');
 
                 pQuestion.appendChild(
                   document.createTextNode(
                     properties +
                       responseObject['results'][i]['question'] +
-                      ' [Your autograde score: ' +
+                      ' --- Autograder score: ' +
                       responseObject['results'][i]['autoGrade'] +
-                      ' points]' +
-                      ' [Your adjusted score: ' +
+                      ' points' +
+                      ' --- Adjusted score: ' +
                       responseObject['results'][i]['adjustedGrade'] +
-                      ' points]'
+                      ' points '
                   )
                 );
+
+                // render the final results table
+                var table = document.createElement('table');
+                table.setAttribute('class', 'result-sub-items');
+
+                var resultsHeader = [
+                  'subItem',
+                  'expectedOutput',
+                  'studentOutput',
+                  'score',
+                  'comment',
+                ];
+
+                var tr = document.createElement('tr');
+                tr.setAttribute('class', 'result-header');
+                for (var s = 0; s < resultsHeader.length; s++) {
+                  var th = document.createElement('th');
+                  th.appendChild(
+                    document.createTextNode(resultsHeader[s].toUpperCase())
+                  );
+                  tr.appendChild(th);
+                }
+                table.appendChild(tr);
+
+                var tr, row;
+                for (
+                  var r = 0;
+                  r < resultsObj[i]['testCaseResponse'].length;
+                  r++
+                ) {
+                  tr = document.createElement('tr');
+                  row = resultsObj[i]['testCaseResponse'][r];
+                  for (var s = 0; s < resultsHeader.length; s++) {
+                    var td = document.createElement('td');
+                    td.appendChild(
+                      document.createTextNode(row[resultsHeader[s]])
+                    );
+                    tr.appendChild(td);
+                  }
+                  table.appendChild(tr);
+                }
+
                 li.appendChild(pQuestion);
+                li.appendChild(table);
                 olresult.appendChild(li);
               }
 
