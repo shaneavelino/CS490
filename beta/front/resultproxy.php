@@ -14,14 +14,17 @@ class proxyHandler {
         switch($method){
         case 'get':
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
             echo $this->handleGet($_GET);
             break;
         case 'post':
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
             echo $this->handlePost($body);
             break;
         case 'put':
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
             echo $this->handlePut($body);
             break;
 
