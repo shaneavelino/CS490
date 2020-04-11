@@ -13,8 +13,8 @@
 * ~~Python capture return output in grader.php~~
 * Ability for professor to add a comment per question
 * Itemize the points - professor can change score for any part of a question (name, test case 1 and 2)
-* Show the itemized point - student can see results for each part of a question
-* Show the comments from professor - student can see the comments
+* ~~Show the itemized point - student can see results for each part of a question~~
+* ~~Show the comments from professor - student can see the comments~~
 * Maybe change to drag and drop - I think Nicholson will agree with this
 
 
