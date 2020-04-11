@@ -317,7 +317,6 @@ function onSubmit(event) {
       let testCaseInput2 = document.getElementById("testCaseInput2");
       let testCaseOutput2 = document.getElementById("testCaseOutput2");
 
-      console.log(questionconstraint.value);
       let json = {
         name: questionName.value,
         description: questionDescription.value,
@@ -330,10 +329,21 @@ function onSubmit(event) {
         ]
       };
 
-
-      var results = {input:'', output:''};
+      var newcases = document.getElementById("testCaseInput"+cases);
+      if(newcases)
+      {
+      console.log(newcases.value);
+      var results = {inputCase:'', outputCase:''};
       json['testCases'].push(results);
-      console.log(json);
+
+
+        cases++;
+      }
+      else{
+        console.log("no testcase "+cases);
+      }
+    
+      //console.log(json);
 
       var data = JSON.stringify(json);
      
@@ -434,6 +444,7 @@ function addcase()
 }
 //globals 
 var counter = 3;
+var cases = 3;
 var category = 'none';
 var dificulty = 'none';
 var selectedExam = '';
