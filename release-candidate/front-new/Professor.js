@@ -304,53 +304,7 @@ function updateScreen() {
 }
 
 //handle question submit 
-function onSubmit(event) {
-  alert('hi');
-        event.preventDefault();
-        let questionName = document.getElementById("name");
-        let questionDescription = document.getElementById("description");
-        let questionDifficulty = document.getElementById("difficulty");
-        let questionCategory = document.getElementById("category");
-        let testCaseInput1 = document.getElementById("testCaseInput1");
-        let testCaseOutput1 = document.getElementById("testCaseOutput1");
-        let testCaseInput2 = document.getElementById("testCaseInput2");
-        let testCaseOutput2 = document.getElementById("testCaseOutput2");
-        let questionconstraint = document.getElementById("constraint");
 
-
-        let json = {
-          name: questionName.value,
-          description: questionDescription.value,
-          difficulty: questionDifficulty.value,
-          questionconstraint: questionconstraint.value,
-          category: questionCategory.value,
-          testCases: []
-        };
-
-
-        var results = {input:'', output:''};
-        json['testCases'].push(results);
-        console.log(json);
-
-
-       // { input: testCaseInput1.value, output: testCaseOutput1.value },
-       // { input: testCaseInput2.value, output: testCaseOutput2.value }
-
-        var data = JSON.stringify(json);
-       
-        var request = new XMLHttpRequest();
-        request.open("POST", "postQuestion.php", true);
-        request.setRequestHeader("Content-type", "application/json");
-        request.send(data);
-
-        request.onreadystatechange = function() {
-          if (request.status == 200 && request.readyState == 4) {
-            responseObject = JSON.parse(request.responseText);
-            updateScreen();
-          }
-        };
-       renderQuestions();
-      }
 
 function applyFilters(event){
    event.preventDefault();
