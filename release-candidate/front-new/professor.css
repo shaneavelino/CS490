@@ -1,4 +1,4 @@
-.student-container {
+.create-exam-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -74,14 +74,46 @@ body {
 }
 
 .current-exam-list {
-  list-style-position: inside;
-  margin-left: -40px;
+  list-style: none;
+  counter-reset: exam-counter;
+}
+
+.current-exam-list li {
+  counter-increment: exam-counter;
+}
+
+.current-exam-list li::before {
+  content: counter(exam-counter) '. ';
+  color: rgba(112, 128, 144, 1);
+  font-weight: bold;
+}
+
+.answer-input {
+  display: block;
+  outline: none;
+  margin: 25px 0px 25px 0px;
+  border: 2px solid rgba(112, 128, 144, 0.5);
+  padding: 5px;
+  font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+  font-size: 14px;
+  resize: none;
+}
+
+input[type='submit'] {
+  background-color: slategray;
+  color: white;
+  padding: 12px 25px;
+  font-size: inherit;
+  font-family: 'Lucida Sans Unicode', sans-serif;
+  float: right;
+  cursor: pointer;
 }
 
 .exam-list-item {
-  margin-bottom: 50px;
   background-color: rgba(112, 128, 144, 0.1);
   border: 1px solid rgba(112, 128, 144, 0.25);
+  padding: 10px;
+  margin: 0 0 25 -40;
 }
 
 .question-score-header {
