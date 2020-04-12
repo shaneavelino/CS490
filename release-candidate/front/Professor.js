@@ -19,6 +19,14 @@ async function createExam(event) {
   renderExams();
 }
 
+function removeFromExamList(questionId) {
+  let questionList = removeDuplicateQuestions(examFinal);
+  questionId.remove();
+  examFinal = questionList.filter(function (element) {
+    return element.name != questionId.id;
+  });
+}
+
 function addToExamList() {
   let checkedRows = getCheckedRows('qTable');
   for (var i = 0; i < checkedRows.length; i++) {
@@ -26,16 +34,34 @@ function addToExamList() {
   }
   let finalQuestions = removeDuplicateQuestions(examFinal);
 
+  console.log(finalQuestions);
   let selectedQuestions = document.getElementById('selected-questions');
   // show the unique questions on the screen
   let p = document.createElement('p');
   for (var i = 0; i < finalQuestions.length; i++) {
-    p.setAttribute('id', finalQuestions[i]['name']);
-    p.appendChild(
-      document.createTextNode(
-        finalQuestions[i]['name'] + ', ' + finalQuestions[i]['score']
+    if (
+      !document.body.contains(
+        document.getElementById(finalQuestions[i]['name'])
       )
-    );
+    ) {
+      p.setAttribute('id', finalQuestions[i]['name']);
+      p.appendChild(
+        document.createTextNode(
+          finalQuestions[i]['name'] +
+            ' [' +
+            finalQuestions[i]['score'] +
+            ' points]  '
+        )
+      );
+      let removeButton = document.createElement('input');
+      removeButton.setAttribute('type', 'button');
+      removeButton.setAttribute('value', 'Remove');
+      removeButton.setAttribute(
+        'onclick',
+        'removeFromExamList(' + finalQuestions[i]['name'] + ');'
+      );
+      p.appendChild(removeButton);
+    }
   }
   selectedQuestions.appendChild(p);
 }

@@ -1,5 +1,10 @@
 #eForm {
   display: flex;
+  width: 100%;
+}
+
+#examName {
+  padding: 5px;
 }
 
 .create-exam-container {
@@ -9,7 +14,16 @@
 }
 
 .eForm-submit {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25%;
+  border: 2px solid rgba(112, 128, 144, 0.25);
+  background-color: rgba(112, 128, 144, 0.1);
+}
+
+.eForm-eName {
+  margin-top: 10px;
 }
 
 .eForm-table {
@@ -64,7 +78,7 @@ table,
 th,
 td {
   border-collapse: collapse;
-  border: 1px solid rgba(112, 128, 144, 0.5);
+  border-bottom: 1px solid rgba(112, 128, 144, 0.5);
   background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
 }
 
@@ -74,10 +88,18 @@ table {
 
 td,
 th {
-  width: 200px;
-  padding: 10px;
+  padding: 5px;
   vertical-align: middle;
   text-align: center;
+}
+
+td {
+  border-right: 1px solid rgba(112, 128, 144, 0.25);
+}
+
+th {
+  background-color: rgba(112, 128, 144, 0.1);
+  border-top: 2px solid rgba(112, 128, 144, 0.25);
 }
 
 body {
