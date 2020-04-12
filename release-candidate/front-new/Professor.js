@@ -324,29 +324,37 @@ function onSubmit(event) {
         category: questionCategory.value,
         questionConstraint: questionconstraint.value,
         testCases: [
-          {inputCase1:testCaseInput1.value,outputCase1:testCaseOutput1.value},
-          {inputCase2:testCaseInput2.value,outputCase2:testCaseOutput2.value}
+          {input:testCaseInput1.value,output:testCaseOutput1.value},
+          {input:testCaseInput2.value,output:testCaseOutput2.value}
         ]
       };
 
-      var newinput = document.getElementById("testCaseInput"+cases);
-      var newoutput = document.getElementById("testCaseOutput"+cases);
-      
-      if(newinput && newoutput)
-      {
+    function caseFunc()
+    {
+        var newinput = document.getElementById("testCaseInput"+cases);
+        var newoutput = document.getElementById("testCaseOutput"+cases);
+        
+        if(newinput && newoutput)
+        {
 
-      var results = {inputCase:'', outputCase:''};
-      results['inputCase'] = newinput.value;
-      results['outputCase'] = newoutput.value;
-      json['testCases'].push(results);
-      //console.log(results);
-
-
+        var results = {input:'', output:''};
+        results['input'] = newinput.value;
+        results['output'] = newoutput.value;
+        json['testCases'].push(results);
+        //console.log(results);
         cases++;
-      }
-      else{
-        console.log("no testcase "+cases);
-      }
+        return 1;
+        }
+        else
+        {
+          console.log("no testcase "+cases);
+          return 0;
+        }
+    }
+
+    while(caseFunc())
+    {}
+
     
       console.log(json);
 
