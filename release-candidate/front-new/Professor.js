@@ -1,4 +1,5 @@
 //creates question
+var examFinal = [];
 
 //creates exam from selected questions
 async function createExam(event) {
@@ -7,14 +8,77 @@ async function createExam(event) {
   const jsonData = {
     name: examForm.elements['examName'].value,
     creator: user,
-    questions: getCheckedRows('qTable'),
+    questions: removeDuplicateQuestions(examFinal),
   };
+  console.log(jsonData);
   let response = await submitJsonData(
     'https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php',
     'POST',
     JSON.stringify(jsonData)
   );
   renderExams();
+}
+
+function removeFromExamList(questionId) {
+  let questionList = removeDuplicateQuestions(examFinal);
+  questionId.remove();
+  examFinal = questionList.filter(function (element) {
+    return element.name != questionId.id;
+  });
+}
+
+function addToExamList() {
+  let checkedRows = getCheckedRows('qTable');
+  for (var i = 0; i < checkedRows.length; i++) {
+    examFinal.push(checkedRows[i]);
+  }
+  let finalQuestions = removeDuplicateQuestions(examFinal);
+
+  console.log(finalQuestions);
+  let selectedQuestions = document.getElementById('selected-questions');
+  // show the unique questions on the screen
+  let p = document.createElement('p');
+  for (var i = 0; i < finalQuestions.length; i++) {
+    if (
+      !document.body.contains(
+        document.getElementById(finalQuestions[i]['name'])
+      )
+    ) {
+      p.setAttribute('id', finalQuestions[i]['name']);
+      p.appendChild(
+        document.createTextNode(
+          finalQuestions[i]['name'] +
+            ' [' +
+            finalQuestions[i]['score'] +
+            ' points]  '
+        )
+      );
+      let removeButton = document.createElement('input');
+      removeButton.setAttribute('type', 'button');
+      removeButton.setAttribute('value', 'Remove');
+      removeButton.setAttribute(
+        'onclick',
+        'removeFromExamList(' + finalQuestions[i]['name'] + ');'
+      );
+      p.appendChild(removeButton);
+    }
+  }
+  selectedQuestions.appendChild(p);
+}
+
+function removeDuplicateQuestions(examList) {
+  let temp = [];
+  let unique = {};
+  for (let i in examList) {
+    name = examList[i]['name'];
+    unique[name] = examList[i];
+  }
+
+  for (i in unique) {
+    temp.push(unique[i]);
+  }
+
+  return temp;
 }
 
 //get checked rows
@@ -143,7 +207,7 @@ function genQuestion(row, table) {
   var tr = document.createElement('tr');
   table.appendChild(tr);
   var tdElement = document.createElement('td');
-  tdElement.innerHTML = '<input type="checkbox">';
+  tdElement.innerHTML = '<input type="checkbox" onclick="addToExamList();">';
   tr.appendChild(tdElement);
   var scoreElement = document.createElement('td');
   scoreElement.innerHTML = '<input type="text">';
@@ -255,6 +319,32 @@ async function gradeExam(event) {
   let data = await postJsonData(gradeUrl, body);
   renderGradeTable(data, val);
 }
+// render grade details
+function renderGradeDetails(gradeDetails, tr) {
+  var subTable = document.createElement('table');
+  tr.appendChild(subTable);
+  var subTr = document.createElement('tr');
+  subTable.appendChild(subTr);
+  var thElement = document.createElement('th');
+  thElement.innerHTML = 'Partial Score';
+  subTr.appendChild(thElement);
+  var thElement = document.createElement('th');
+  thElement.innerHTML = 'Comments';
+  subTr.appendChild(thElement);
+
+  gradeDetails.map((detail) => {
+    var subTr = document.createElement('tr');
+    subTable.appendChild(subTr);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
+    subTr.appendChild(tdElement);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML =
+      "<textarea rows='4' cols='50'>Instructor comments</textarea>";
+    subTr.appendChild(tdElement);
+  });
+  return;
+}
 
 
 // render grade details
@@ -317,7 +407,6 @@ function renderGradeTable(data, exam) {
     table
   );
   data[exam].map((row) => {
-    console.log(row);
     var tr = document.createElement('tr');
     table.appendChild(tr);
     Object.values(row).forEach((value) => {

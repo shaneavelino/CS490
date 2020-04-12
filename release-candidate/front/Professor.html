@@ -195,16 +195,21 @@
             <option value="Exceptions">Exceptions</option>
             <option value="Classes">Classes</option>
           </select>
-          <label for="SearchText">Search</label>
+          <label for="SearchText">Keyword</label>
           <input type="text" id="SearchText" />
           <input type="submit" value="Apply Filters" />
         </form>
-        <br />
+        <br/>
         <form id="eForm">
           <div class="eForm-submit">
-            <label for="examName">Exam Name</label>
-            <input type="text" id="examName" /><br />
-            <input type="submit" value="Create" />
+            <div class="eForm-eName">
+              <label for="examName">Exam Name</label>
+              <input type="text" id="examName" />
+              <input type="submit" value="Create" />
+            </div>
+            <div id="selected-questions">
+              <h4>Questions Added</h2>
+            </div>
           </div>
           <div class="eForm-table">
             <table id="qTable"></table>
