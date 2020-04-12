@@ -329,12 +329,17 @@ function onSubmit(event) {
         ]
       };
 
-      var newcases = document.getElementById("testCaseInput"+cases);
-      if(newcases)
+      var newinput = document.getElementById("testCaseInput"+cases);
+      var newoutput = document.getElementById("testCaseOutput"+cases);
+      
+      if(newinput && newoutput)
       {
-      console.log(newcases.value);
+
       var results = {inputCase:'', outputCase:''};
+      results['inputCase'] = newinput.value;
+      results['outputCase'] = newoutput.value;
       json['testCases'].push(results);
+      //console.log(results);
 
 
         cases++;
@@ -343,7 +348,7 @@ function onSubmit(event) {
         console.log("no testcase "+cases);
       }
     
-      //console.log(json);
+      console.log(json);
 
       var data = JSON.stringify(json);
      
@@ -430,7 +435,7 @@ function addcase()
 
     inputCase.setAttribute("id","testCaseInput"+counter);inputCase.setAttribute("type","text");
     inputCase.setAttribute("placeholder","Input "+counter);
-    outputCase.setAttribute("id","testCaseOutput "+counter);outputCase.setAttribute("type","text");
+    outputCase.setAttribute("id","testCaseOutput"+counter);outputCase.setAttribute("type","text");
     outputCase.setAttribute("placeholder","Output "+counter);
 
     list.appendChild(label);list.appendChild(inputCase);list.appendChild(outputCase);
