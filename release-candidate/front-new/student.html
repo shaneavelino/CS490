@@ -30,7 +30,7 @@
 
       function logout() {
         let homepage =
-          'http://localhost:3000/release-candidate/front-new/login.html';
+          'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
 
         window.location.href = homepage;
 
@@ -160,7 +160,7 @@
         request.onreadystatechange = function () {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
-            let currExam = response[2]['exam'];
+            let currExam = response[0]['exam'];
             loadExam(currExam);
             // store the exam name in session storage for sending the student results
             sessionStorage.setItem('exam', currExam);

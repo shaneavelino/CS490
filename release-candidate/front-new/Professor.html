@@ -4,7 +4,7 @@
   <head>
     <title>Exam Portal</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="stylesheet" type="text/css" href="professor.css" />
+    <link rel="stylesheet" type="text/css" href="Professor.css" />
   </head>
   <body style="margin: 0;">
     <div class="header-container">
@@ -42,6 +42,9 @@
             >Grade Exams</a
           >
         </li>
+        <li class="nav-link" id="logout-link">
+          <a href="javascript:;" id="nav-button" onclick="logout();">Logout</a>
+        </li>
       </ul>
     </div>
 
@@ -63,7 +66,7 @@
               <label for="description">Description:</label>
               <input
                 id="description"
-                type="textArea"
+                type="text"
                 name="description"
                 placeholder="Description"
               />
@@ -110,7 +113,6 @@
                 <option value="Classes">Classes</option>
               </select>
             </li>
-
             <li>
               <label for="testcase1">Test Case 1:</label>
               <input
@@ -211,6 +213,7 @@
           </div>
         </form>
       </div>
+
     </div>
 
     <div id="examAssign" hidden>

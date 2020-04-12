@@ -438,6 +438,15 @@ function visibilityChange(element) {
   }
 }
 
+function logout() {
+  let homepage =
+    'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+
+  window.location.href = homepage;
+
+  sessionStorage.clear();
+}
+
 // Adds function calls to html representation calls initial functions
 function init() {
   //use to validate user role
