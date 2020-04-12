@@ -95,7 +95,6 @@ function getCheckedRows(table) {
       checkedRows.push(obj);
     }
   }
-  //console.log(checkedRows);
   return checkedRows;
 }
 
@@ -109,11 +108,9 @@ function getCheckedStudents(table) {
     if (row.getElementsByTagName('input')[0].checked) {
       obj = {};
       obj.name = row.cells[1].innerHTML;
-      console.log(row.cells[1].innerHTML);
       checkedRows.push(obj);
     }
   }
-  console.log(checkedRows);
   return checkedRows;
 }
 
@@ -148,7 +145,6 @@ function assignExam(event) {
     let students = getCheckedStudents('sTable');
     students.map((student) => {
       exams.map((exam) => {
-        console.log(student);
         let jsonBody = {
           user: student.name,
           exam: exam.name,
@@ -164,7 +160,6 @@ function assignExam(event) {
   if (formVal === 'close') {
     let exams = getCheckedStudents('aTable');
     exams.map((exam) => {
-      console.log('exam:', exam.name);
       let jsonData = { examGraded: exam.name };
       submitJsonData(
         'https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php',
@@ -190,7 +185,7 @@ function renderHeaders(headers, table) {
 function genColumn(item, row) {
   if (!Array.isArray(item)) {
     var tdElement = document.createElement('td');
-    tdElement.innerHTML = item;
+    tdElement.innerHTML = '<p style="white-space:pre-wrap">' + item + '</p>';
     row.appendChild(tdElement);
   }
 }
@@ -256,7 +251,8 @@ async function renderQuestions() {
   response.map((currentVal) => {
     if (
       searchString !== '' &&
-      currentVal.description.search(searchString) === -1
+      currentVal.description.search(searchString) === -1 &&
+      currentVal.name.search(searchString) === -1
     ) {
       return;
     }
@@ -265,6 +261,9 @@ async function renderQuestions() {
     }
     if (category !== 'none' && currentVal.category !== category) {
       return;
+    }
+    if (constraint !== 'none' && currentVal.questionConstraint !== constraint){
+      return; 
     }
 
     genQuestion(currentVal, table);
@@ -347,15 +346,60 @@ function renderGradeDetails(gradeDetails, tr) {
   return;
 }
 
+
+// render grade details
+function renderGradeDetails(gradeDetails, tr) {
+  var padding1 = document.createElement('td');
+  var padding2 = document.createElement('td');
+  var padding3 = document.createElement('td');
+  tr.appendChild(padding1);
+  tr.appendChild(padding2);
+  tr.appendChild(padding3);
+  var subTable = document.createElement('table');
+  tr.appendChild(subTable);
+    renderHeaders(
+    [
+      'Input',
+      'Output', 
+      'Student Output',
+      'Partial Score',
+      'Comments'
+    ],
+    subTable
+  );
+
+  gradeDetails.map((detail) => {
+      var subTr = document.createElement('tr');
+      subTable.appendChild(subTr);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.input !== undefined ? detail.input : 'N/A' ;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.output !== undefined ? detail.output : 'N/A' ;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.studentOutput !== undefined ? detail.studentOutput : 'N/A' ;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML = "<textarea rows='4' cols='50'>Instructor comments</textarea>";
+      subTr.appendChild(tdElement);
+  });
+  return;
+}
+
 // render grade table
+
 function renderGradeTable(data, exam) {
   let table = document.querySelector('#gTable');
   table.innerHTML = '';
   renderHeaders(
-    [
-      'Adjusted Grade',
+    [ 
       'Student',
       'Question',
+      'Constraint',
       'Answer',
       'Auto-Grade',
       'Adjusted Grade',
@@ -365,9 +409,6 @@ function renderGradeTable(data, exam) {
   data[exam].map((row) => {
     var tr = document.createElement('tr');
     table.appendChild(tr);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML = '<input type="text">';
-    tr.appendChild(tdElement);
     Object.values(row).forEach((value) => {
       genColumn(value, tr);
     });
@@ -458,6 +499,7 @@ function applyFilters(event) {
   event.preventDefault();
   category = document.getElementById('categorySelect').value;
   dificulty = document.getElementById('difficultySelect').value;
+  constraint = document.getElementById('constraintSelect').value; 
   searchString = document.getElementById('SearchText').value;
   renderQuestions();
 }
@@ -485,6 +527,15 @@ function visibilityChange(element) {
   }
 }
 
+function logout() {
+  let homepage =
+    'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+
+  window.location.href = homepage;
+
+  sessionStorage.clear();
+}
+
 // Adds function calls to html representation calls initial functions
 function init() {
   //use to validate user role
@@ -508,11 +559,11 @@ function init() {
 //globals
 var category = 'none';
 var dificulty = 'none';
+var constraint = 'none';
 var searchString = '';
 var selectedExam = '';
 var user = '';
 var role = '';
-// globals and init code
 var responseObject;
 
 window.onload = init;
