@@ -64,7 +64,7 @@ table,
 th,
 td {
   border-collapse: collapse;
-  border-bottom: 1px solid rgba(112, 128, 144, 0.5);
+  border: 1px solid rgba(112, 128, 144, 0.5);
   background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
 }
 
