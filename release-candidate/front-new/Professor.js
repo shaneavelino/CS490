@@ -438,7 +438,7 @@ function addcase()
     var outputCase = document.createElement("input");
 
     label.setAttribute("for","testcase"+counter);
-    label.innerText = "Test Case "+counter+":";
+    label.innerText = "Test Case "+counter+": ";
 
     inputCase.setAttribute("id","testCaseInput"+counter);inputCase.setAttribute("type","text");
     inputCase.setAttribute("placeholder","Input "+counter);
