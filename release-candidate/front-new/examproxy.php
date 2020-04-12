@@ -7,7 +7,7 @@ class proxyHandler {
 
 
     public function __construct(){
-        $this->url = "https://web.njit.edu/~asc8/cs490/beta/middle/exam.php";
+        $this->url = "https://web.njit.edu/~asc8/cs490/exam.php";
     }
 
     public function handleRequest($method, $body){
