@@ -305,7 +305,6 @@ function updateScreen() {
 
 //handle question submit 
 function onSubmit(event) {
-      alert('hi');
       event.preventDefault();
       let questionName = document.getElementById("name");
       let questionDescription = document.getElementById("description");
@@ -341,7 +340,6 @@ function onSubmit(event) {
         results['input'] = newinput.value;
         results['output'] = newoutput.value;
         json['testCases'].push(results);
-        //console.log(results);
         cases++;
         return 1;
         }
