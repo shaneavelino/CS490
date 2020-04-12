@@ -428,6 +428,7 @@ function init(){
 
 function addcase()
 {
+  var mainlist = document.getElementById("list");
   if(counter < 7)
   {
 
@@ -446,7 +447,7 @@ function addcase()
 
     list.appendChild(label);list.appendChild(inputCase);list.appendChild(outputCase);
     
-    document.body.appendChild(list);
+    mainlist.appendChild(list);
 
     counter++;
   }
