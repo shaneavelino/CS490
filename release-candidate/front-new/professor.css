@@ -12,6 +12,12 @@ ul
   padding: 5px;
 }
 
+.question-form-container
+{
+  margin-left: 7%;
+  margin-top: 4%;
+}
+
 .create-exam-container {
   display: flex;
   flex-direction: column;
