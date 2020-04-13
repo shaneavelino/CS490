@@ -410,7 +410,7 @@ function renderGradeDetails(gradeDetails, tr) {
       tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
       subTr.appendChild(tdElement);
       var tdElement = document.createElement('td');
-      tdElement.innerHTML = "<textarea rows='4' cols='50'>Instructor comments</textarea>";
+      tdElement.innerHTML = "<textarea rows='4' cols='50' placeholder='Instructor comments'></textarea>";
       subTr.appendChild(tdElement);
   });
   return;
