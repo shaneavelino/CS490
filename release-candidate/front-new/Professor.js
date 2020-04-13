@@ -580,12 +580,16 @@ function addcase()
   var mainlist = document.getElementById("testCaseList");
   if(counter < 7)
   {
+    counter++;
+    if(counter == 7)
+    {counter--;return 0;}
 
     var list = document.createElement("li");
     var label = document.createElement("label");
     var inputCase = document.createElement("input");
     var outputCase = document.createElement("input");
-
+    
+    list.setAttribute("id","tc"+counter);
     label.setAttribute("for","testcase"+counter);
     label.innerText = "Test Case "+counter+": ";
 
@@ -598,12 +602,24 @@ function addcase()
     
     mainlist.appendChild(list);
 
-    counter++;
+    
+  }
+}
+
+function rmcase()
+{
+  if(counter > 2)
+  {
+    var mainlist = document.getElementById("testCaseList");
+    var test = document.getElementById("tc"+counter);
+    console.log(counter);
+    mainlist.removeChild(test);
+    counter--;
   }
 }
 
 //globals 
-var counter = 3;
+var counter = 2;
 var cases = 3;
 var category = 'none';
 var dificulty = 'none';
