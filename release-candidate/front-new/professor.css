@@ -1,3 +1,8 @@
+ul
+{
+  list-style-type: none;
+}
+
 #eForm {
   display: flex;
   width: 100%;
@@ -5,6 +10,12 @@
 
 #examName {
   padding: 5px;
+}
+
+.question-form-container
+{
+  margin-left: 7%;
+  margin-top: 4%;
 }
 
 .create-exam-container {

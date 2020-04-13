@@ -591,36 +591,46 @@ function init() {
   renderGrader(user);
 }
 
-function addcase() {
-  var mainlist = document.getElementById('testCaseList');
-  if (counter < 7) {
-    var list = document.createElement('li');
-    var label = document.createElement('label');
-    var inputCase = document.createElement('input');
-    var outputCase = document.createElement('input');
+function addcase()
+{
+  var mainlist = document.getElementById("testCaseList");
+  if(counter < 7)
+  {
+    counter++;
+    if(counter == 7)
+    {counter--;return 0;}
 
-    label.setAttribute('for', 'testcase' + counter);
-    label.innerText = 'Test Case ' + counter + ': ';
-
-    inputCase.setAttribute('id', 'testCaseInput' + counter);
-    inputCase.setAttribute('type', 'text');
-    inputCase.setAttribute('placeholder', 'Input ' + counter);
-    outputCase.setAttribute('id', 'testCaseOutput' + counter);
-    outputCase.setAttribute('type', 'text');
-    outputCase.setAttribute('placeholder', 'Output ' + counter);
-
+    var list = document.createElement("li");
+    var label = document.createElement("label");
+    var inputCase = document.createElement("input");
+    var outputCase = document.createElement("input");
+    
+    list.setAttribute("id","tc"+counter);
+    label.setAttribute("for","testcase"+counter);
+    label.innerText = "Test Case "+counter+": ";
     list.appendChild(label);
     list.appendChild(inputCase);
     list.appendChild(outputCase);
 
     mainlist.appendChild(list);
 
-    counter++;
+    
   }
 }
 
-//globals
-var counter = 3;
+function rmcase()
+{
+  if(counter > 2)
+  {
+    var mainlist = document.getElementById("testCaseList");
+    var test = document.getElementById("tc"+counter);
+    mainlist.removeChild(test);
+    counter--;
+  }
+}
+
+//globals 
+var counter = 2;
 var cases = 3;
 var category = 'none';
 var dificulty = 'none';
