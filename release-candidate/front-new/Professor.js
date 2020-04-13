@@ -612,7 +612,6 @@ function rmcase()
   {
     var mainlist = document.getElementById("testCaseList");
     var test = document.getElementById("tc"+counter);
-    console.log(counter);
     mainlist.removeChild(test);
     counter--;
   }
