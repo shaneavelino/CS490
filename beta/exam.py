@@ -1,9 +1,19 @@
-def echo(x): 
-	print(x) 
+def o
+	peration(op, a, b):
+	if op == '+':
+		return a + b
+	elif op == '-':
+		return a - b
+	elif op == '*':
+		return a * b
+	elif op == '/':
+		return a / b
+	else:
+		return -1 
 
-string='pi'
-number=u'pi'
+string='"0", 2, 6'
+number=u'"0", 2, 6'
 if(string.isalpha()):
-	echo(string)
+	operation(string)
 if(number.isnumeric()):
-	echo(int(number))
+	operation(int(number))

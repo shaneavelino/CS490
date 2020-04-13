@@ -3,6 +3,7 @@
     <title>Exam Portal</title>
     <link rel="stylesheet" type="text/css" href="student.css" />
   </head>
+
   <body onload="init()" style="margin: 0px;">
     <div class="header-container">
       <ul id="nav-bar" class="nav">
@@ -25,11 +26,11 @@
     <div id="student-container" class="student-container"></div>
 
     <script type="text/javascript">
-      var studentDiv = document.getElementById("student-container");
+      var studentDiv = document.getElementById('student-container');
 
       function logout() {
         let homepage =
-          "http://localhost:3000/CS490/release-candidate/front/login.html";
+          'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
 
         window.location.href = homepage;
 
@@ -38,25 +39,25 @@
 
       function init() {
         // validate login
-        if (!(sessionStorage.role == "Student")) {
-          document.write("<h1>ACCESS DENIED</h1>");
+        if (!(sessionStorage.role == 'Student')) {
+          document.write('<h1>ACCESS DENIED</h1>');
         } else {
           getUser();
 
           // create the home div on load
-          var studentDiv = document.getElementById("student-container");
-          var homeDiv = document.createElement("div");
-          homeDiv.setAttribute("id", "home-container");
-          homeDiv.setAttribute("class", "home-container");
+          var studentDiv = document.getElementById('student-container');
+          var homeDiv = document.createElement('div');
+          homeDiv.setAttribute('id', 'home-container');
+          homeDiv.setAttribute('class', 'home-container');
           studentDiv.appendChild(homeDiv);
 
           // display welcome message
-          var home = document.getElementById("home-container");
-          var h2 = document.createElement("h2");
-          h2.setAttribute("id", "welcome-message");
-          h2.setAttribute("class", "welcome-message");
+          var home = document.getElementById('home-container');
+          var h2 = document.createElement('h2');
+          h2.setAttribute('id', 'welcome-message');
+          h2.setAttribute('class', 'welcome-message');
           h2.appendChild(
-            document.createTextNode("Welcome to the Exam Portal!")
+            document.createTextNode('Welcome to the Exam Portal!')
           );
           home.appendChild(h2);
         }
@@ -66,44 +67,44 @@
         let user = sessionStorage.user;
         let message = user.toUpperCase();
 
-        var a = document.createElement("a");
-        a.setAttribute("href", "javascript:;");
-        a.setAttribute("id", "nav-button");
-        a.setAttribute("onclick", "location.reload();");
+        var a = document.createElement('a');
+        a.setAttribute('href', 'javascript:;');
+        a.setAttribute('id', 'nav-button');
+        a.setAttribute('onclick', 'location.reload();');
         a.appendChild(document.createTextNode(message));
 
-        document.getElementById("home-link").appendChild(a);
+        document.getElementById('home-link').appendChild(a);
       }
 
       function renderExam() {
         // remove home container
-        var home = document.getElementById("home-container");
+        var home = document.getElementById('home-container');
         if (document.body.contains(home)) {
           home.remove();
         }
 
         // remove results container
-        var results = document.getElementById("results-container");
+        var results = document.getElementById('results-container');
         if (document.body.contains(results)) {
           results.remove();
         }
 
         // create the exam container on click if it does not exist
         if (
-          !document.body.contains(document.getElementById("exam-container"))
+          !document.body.contains(document.getElementById('exam-container'))
         ) {
-          var examDiv = document.createElement("div");
-          examDiv.setAttribute("id", "exam-container");
-          examDiv.setAttribute("class", "exam-container");
+          var examDiv = document.createElement('div');
+          examDiv.setAttribute('id', 'exam-container');
+          examDiv.setAttribute('class', 'exam-container');
           studentDiv.appendChild(examDiv);
         }
 
         // handle clicking exam button when already there
-        if (document.body.contains(document.getElementById("exam-rendered"))) {
-          alert("You already have an active exam in progress!");
+        if (document.body.contains(document.getElementById('exam-rendered'))) {
+          alert('You already have an active exam in progress!');
         } else {
-          if (sessionStorage.submitted == "1") {
-            alert("You have already submitted your exam.");
+          if (sessionStorage.submitted == '1') {
+            alert('You have already submitted your exam.');
             location.reload();
           } else {
             getExam();
@@ -113,32 +114,32 @@
 
       function renderResults() {
         // remove home container
-        var home = document.getElementById("home-container");
+        var home = document.getElementById('home-container');
         if (document.body.contains(home)) {
           home.remove();
         }
 
         // remove exam container
-        var exam = document.getElementById("exam-container");
+        var exam = document.getElementById('exam-container');
         if (document.body.contains(exam)) {
           exam.remove();
         }
 
         // create the results container on click if it does not exist
         if (
-          !document.body.contains(document.getElementById("results-container"))
+          !document.body.contains(document.getElementById('results-container'))
         ) {
-          var resultsDiv = document.createElement("div");
-          resultsDiv.setAttribute("id", "results-container");
-          resultsDiv.setAttribute("class", "results-container");
+          var resultsDiv = document.createElement('div');
+          resultsDiv.setAttribute('id', 'results-container');
+          resultsDiv.setAttribute('class', 'results-container');
           studentDiv.appendChild(resultsDiv);
         }
 
         // handle clicking results button when already there
         if (
-          document.body.contains(document.getElementById("results-rendered"))
+          document.body.contains(document.getElementById('results-rendered'))
         ) {
-          alert("You are already viewing results!");
+          alert('You are already viewing results!');
         } else {
           getResults();
         }
@@ -150,18 +151,19 @@
         let json = { fetchExamsByUser: user };
         let data = JSON.stringify(json);
 
+        console.log('fetching exam: ', json);
         let request = new XMLHttpRequest();
-        request.open("POST", "getExam.php", true);
-        request.setRequestHeader("Content-type", "application/json");
+        request.open('POST', 'getExam.php', true);
+        request.setRequestHeader('Content-type', 'application/json');
         request.send(data);
 
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
-            let currExam = response[3]["exam"];
+            let currExam = response[0]['exam'];
             loadExam(currExam);
             // store the exam name in session storage for sending the student results
-            sessionStorage.setItem("exam", currExam);
+            sessionStorage.setItem('exam', currExam);
           }
         };
       }
@@ -173,64 +175,67 @@
         var data = JSON.stringify(json);
 
         var request = new XMLHttpRequest();
-        request.open("POST", "getExam.php", true);
-        request.setRequestHeader("Content-type", "application/json");
+        request.open('POST', 'getExam.php', true);
+        request.setRequestHeader('Content-type', 'application/json');
         request.send(data);
 
-        let rows = 5;
-        let cols = 40;
+        let rows = 10;
+        let cols = 80;
 
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
           if (request.status == 200 && request.readyState == 4) {
             var response = JSON.parse(request.responseText);
+            console.log('response from server: ', response);
 
-            var examTitle = document.createElement("h2");
-            examTitle.setAttribute("id", "exam-rendered");
+            var examTitle = document.createElement('h2');
+            examTitle.setAttribute('id', 'exam-rendered');
             examTitle.appendChild(
-              document.createTextNode(response["name"].toUpperCase())
+              document.createTextNode(response['name'].toUpperCase())
             );
-            document.getElementById("exam-container").appendChild(examTitle);
+            document.getElementById('exam-container').appendChild(examTitle);
 
             // create a form for the exam
-            var form = document.createElement("form");
-            form.setAttribute("id", "exam-form");
-            form.setAttribute("method", "POST");
-            form.setAttribute("action", "#");
+            var form = document.createElement('form');
+            form.setAttribute('id', 'exam-form');
+            form.setAttribute('method', 'POST');
+            form.setAttribute('action', '#');
             form.setAttribute(
-              "onsubmit",
-              "event.preventDefault();submitExam();"
+              'onsubmit',
+              'event.preventDefault();submitExam();'
             );
 
-            var properties = ["Function name: "];
+            var properties = ['Function name: '];
 
-            var capitalize = function(s) {
+            var capitalize = function (s) {
               return s.charAt(0).toUpperCase() + s.slice(1);
             };
 
             // Create a list with the exam questions
-            var ol = document.createElement("ol");
-            ol.setAttribute("id", "current-exam");
-            for (var i = 0; i < response["questions"].length; i++) {
-              var li = document.createElement("li");
+            var ol = document.createElement('ol');
+            ol.setAttribute('id', 'current-exam');
+            ol.setAttribute('class', 'current-exam-list');
+            for (var i = 0; i < response['questions'].length; i++) {
+              var li = document.createElement('li');
               // set the list attribute id to the question name so we can send it back to the result service
-              li.setAttribute("id", response["questions"][i]["name"]);
-              var pQuestion = document.createElement("p");
+              li.setAttribute('id', response['questions'][i]['name']);
+              li.setAttribute('class', 'exam-list-item');
+              var pQuestion = document.createElement('p');
 
               pQuestion.appendChild(
                 document.createTextNode(
                   properties +
-                    response["questions"][i]["name"] +
-                    " [" +
-                    response["questions"][i]["score"] +
-                    " points]"
+                    response['questions'][i]['name'] +
+                    ' [' +
+                    response['questions'][i]['score'] +
+                    ' points]'
                 )
               );
               li.appendChild(pQuestion);
 
-              var pDescription = document.createElement("p");
+              var pDescription = document.createElement('p');
               pDescription.appendChild(
                 document.createTextNode(
-                  capitalize(response["questions"][i]["description"])
+                  capitalize(response['questions'][i]['description'])
                 )
               );
               li.appendChild(pDescription);
@@ -241,95 +246,95 @@
               // li.appendChild(labelAnswer);
 
               // create input element for each question answer
-              var inputAnswer = document.createElement("textarea");
-              let iter = "answerInput" + i;
-              inputAnswer.setAttribute("id", iter);
-              inputAnswer.setAttribute("class", "answer-input");
-              inputAnswer.setAttribute("rows", rows);
-              inputAnswer.setAttribute("cols", cols);
+              var inputAnswer = document.createElement('textarea');
+              let iter = 'answerInput' + i;
+              inputAnswer.setAttribute('id', iter);
+              inputAnswer.setAttribute('class', 'answer-input');
+              inputAnswer.setAttribute('rows', rows);
+              inputAnswer.setAttribute('cols', cols);
               inputAnswer.setAttribute(
-                "onkeydown",
+                'onkeydown',
                 "if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}"
               );
-              inputAnswer.setAttribute("type", "text");
-              inputAnswer.setAttribute("placeholder", "Your answer here");
+              inputAnswer.setAttribute('type', 'text');
+              inputAnswer.setAttribute('placeholder', 'Your answer here');
               li.appendChild(inputAnswer);
 
               //console.log(response["questions"][i]["name"]);
               ol.appendChild(li);
             }
 
-            var submitButton = document.createElement("input");
-            submitButton.setAttribute("type", "submit");
-            submitButton.setAttribute("value", "Submit");
+            var submitButton = document.createElement('input');
+            submitButton.setAttribute('type', 'submit');
+            submitButton.setAttribute('value', 'Submit');
             ol.appendChild(submitButton);
 
             form.appendChild(ol);
-            document.getElementById("exam-container").appendChild(form);
+            document.getElementById('exam-container').appendChild(form);
           }
         };
       }
 
       // submit the exam to middle
       function submitExam() {
-        var submitFinal = confirm("Are you sure you want to submit your exam?");
+        var submitFinal = confirm('Are you sure you want to submit your exam?');
         if (submitFinal == true) {
           let json = {
             user: sessionStorage.user,
             exam: sessionStorage.exam,
-            results: []
+            results: [],
           };
 
           // loop through the form order list minus the last item because its the submit button
-          const currExam = document.getElementById("current-exam");
+          const currExam = document.getElementById('current-exam');
           for (let i = 0; i < currExam.children.length - 1; i++) {
-            var resultsIter = { question: "", answer: "" };
+            var resultsIter = { question: '', answer: '' };
             // each question name from the form
-            let questionId = currExam.children[i].getAttribute("id");
+            let questionId = currExam.children[i].getAttribute('id');
 
             // append it to the json
-            resultsIter["question"] = questionId;
+            resultsIter['question'] = questionId;
 
             // each answer name from the form
             let listId = document.getElementById(questionId);
-            let answerId = listId.children[2].getAttribute("id");
+            let answerId = listId.children[2].getAttribute('id');
             let answerText = document.getElementById(answerId).value;
-            resultsIter["answer"] = answerText;
+            resultsIter['answer'] = answerText;
 
             // push the answer per question into the final result array to middle
-            json["results"].push(resultsIter);
+            json['results'].push(resultsIter);
           }
 
           var data = JSON.stringify(json);
           console.log(data);
 
           var request = new XMLHttpRequest();
-          request.open("POST", "postResult.php", true);
-          request.setRequestHeader("Content-type", "application/json");
+          request.open('POST', 'postResult.php', true);
+          request.setRequestHeader('Content-type', 'application/json');
           request.send(data);
 
-          request.onreadystatechange = function() {
+          request.onreadystatechange = function () {
             if (request.status == 200 && request.readyState == 4) {
               let responseObject = JSON.parse(request.responseText);
-              console.log("Exam submitted: ", responseObject);
+              console.log('Exam submitted: ', responseObject);
 
-              if (responseObject.examResultsInserted == "true") {
+              if (responseObject.examResultsInserted == 'true') {
                 // delete exam form and show success message
-                document.getElementById("exam-form").remove();
+                document.getElementById('exam-form').remove();
 
-                var p = document.createElement("p");
+                var p = document.createElement('p');
                 p.appendChild(
                   document.createTextNode(
-                    "You have successfully submitted your exam!"
+                    'You have successfully submitted your exam!'
                   )
                 );
 
-                document.getElementById("exam-container").appendChild(p);
+                document.getElementById('exam-container').appendChild(p);
 
                 // call the auto grader
                 autoGrade();
               } else {
-                alert("There was an issue submitting this exam");
+                alert('There was an issue submitting this exam');
               }
             }
           };
@@ -339,17 +344,17 @@
       function autoGrade() {
         let json = {
           user: sessionStorage.user,
-          exam: sessionStorage.exam
+          exam: sessionStorage.exam,
         };
 
         var data = JSON.stringify(json);
 
         var request = new XMLHttpRequest();
-        request.open("POST", "callGrader.php", true);
-        request.setRequestHeader("Content-type", "application/json");
+        request.open('POST', 'callGrader.php', true);
+        request.setRequestHeader('Content-type', 'application/json');
         request.send(data);
 
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
           if (request.status == 200 && request.readyState == 4) {
             let response = JSON.parse(request.responseText);
             console.log(response);
@@ -360,70 +365,123 @@
       function getResults() {
         let json = {
           user: sessionStorage.user,
-          exam: sessionStorage.exam
+          exam: sessionStorage.exam,
         };
 
         var data = JSON.stringify(json);
+        console.log('fetching results: ', json);
 
         let request = new XMLHttpRequest();
-        request.open("POST", "postResult.php", true);
-        request.setRequestHeader("Content-type", "application/json");
+        request.open('POST', 'postResult.php', true);
+        request.setRequestHeader('Content-type', 'application/json');
         request.send(data);
 
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
           if (request.status == 200 && request.readyState == 4) {
             let responseObject = JSON.parse(request.responseText);
-            console.log(responseObject);
+            console.log('response from server: ', responseObject);
 
-            var properties = ["Function name: "];
+            var properties = ['Function name: '];
 
             // check if exam is graded
-            if (responseObject["graded"] == "1") {
+            if (responseObject['graded'] == '1') {
               // store the graded exam, prevent the student from attempting to take exam again
-              sessionStorage.setItem("submitted", responseObject["graded"]);
+              sessionStorage.setItem('submitted', responseObject['graded']);
 
-              var graded = document.createElement("h2");
-              graded.setAttribute("id", "results-rendered");
-              graded.appendChild(document.createTextNode("RESULTS:"));
-              document.getElementById("results-container").appendChild(graded);
+              var graded = document.createElement('h2');
+              graded.setAttribute('id', 'results-rendered');
+              graded.appendChild(
+                document.createTextNode(
+                  sessionStorage.exam.toUpperCase() + ' RESULTS:'
+                )
+              );
+              document.getElementById('results-container').appendChild(graded);
 
-              let olresult = document.createElement("ol");
-              olresult.setAttribute("id", "current-exam-results");
-              for (var i = 0; i < responseObject["results"].length; i++) {
-                var li = document.createElement("li");
+              let olresult = document.createElement('ol');
+              olresult.setAttribute('id', 'current-exam-results');
+              olresult.setAttribute('class', 'results-ordered-list');
 
-                li.setAttribute("id", responseObject["results"][i]["question"]);
-                var pQuestion = document.createElement("p");
+              let resultsObj = responseObject['results'];
+              for (var i = 0; i < resultsObj.length; i++) {
+                var li = document.createElement('li');
+
+                li.setAttribute('id', resultsObj[i]['question']);
+                li.setAttribute('class', 'result-list-item');
+                var pQuestion = document.createElement('p');
+                pQuestion.setAttribute('class', 'question-score-header');
 
                 pQuestion.appendChild(
                   document.createTextNode(
                     properties +
-                      responseObject["results"][i]["question"] +
-                      " [Your autograde score: " +
-                      responseObject["results"][i]["autoGrade"] +
-                      " points]" +
-                      " [Your adjusted score: " +
-                      responseObject["results"][i]["adjustedGrade"] +
-                      " points]"
+                      responseObject['results'][i]['question'] +
+                      ' --- Autograder score: ' +
+                      responseObject['results'][i]['autoGrade'] +
+                      ' points' +
+                      ' --- Adjusted score: ' +
+                      responseObject['results'][i]['adjustedGrade'] +
+                      ' points '
                   )
                 );
+
+                // render the final results table
+                var table = document.createElement('table');
+                table.setAttribute('class', 'result-sub-items');
+
+                var resultsHeader = [
+                  'subItem',
+                  'expectedOutput',
+                  'studentOutput',
+                  'score',
+                  'comment',
+                ];
+
+                var tr = document.createElement('tr');
+                tr.setAttribute('class', 'result-header');
+                for (var s = 0; s < resultsHeader.length; s++) {
+                  var th = document.createElement('th');
+                  th.appendChild(
+                    document.createTextNode(resultsHeader[s].toUpperCase())
+                  );
+                  tr.appendChild(th);
+                }
+                table.appendChild(tr);
+
+                var tr, row;
+                for (
+                  var r = 0;
+                  r < resultsObj[i]['testCaseResponse'].length;
+                  r++
+                ) {
+                  tr = document.createElement('tr');
+                  row = resultsObj[i]['testCaseResponse'][r];
+                  for (var s = 0; s < resultsHeader.length; s++) {
+                    var td = document.createElement('td');
+                    td.appendChild(
+                      document.createTextNode(row[resultsHeader[s]])
+                    );
+                    tr.appendChild(td);
+                  }
+                  table.appendChild(tr);
+                }
+
                 li.appendChild(pQuestion);
+                li.appendChild(table);
                 olresult.appendChild(li);
               }
 
               document
-                .getElementById("results-container")
+                .getElementById('results-container')
                 .appendChild(olresult);
             } else {
-              var ungraded = document.createElement("h2");
-              ungraded.setAttribute("id", "results-rendered");
+              var ungraded = document.createElement('h2');
+              ungraded.setAttribute('id', 'results-rendered');
               ungraded.appendChild(
                 document.createTextNode(
-                  "RESULTS NOT GRADED. PLEASE CHECK BACK LATER."
+                  'RESULTS NOT GRADED. PLEASE CHECK BACK LATER.'
                 )
               );
               document
-                .getElementById("results-container")
+                .getElementById('results-container')
                 .appendChild(ungraded);
             }
             // show running total score

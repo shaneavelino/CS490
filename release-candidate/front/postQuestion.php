@@ -1,7 +1,7 @@
 <?php
 
 	//GET----------------
-	$url = 'https://web.njit.edu/~asc8/cs490/rc/middle/question.php';
+	$url = 'https://web.njit.edu/~asc8/cs490/question.php';
 	$data = file_get_contents('php://input');
 
 	$curl = curl_init();

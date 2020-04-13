@@ -16,7 +16,7 @@ require_once('./constants.php');
 */
 
 /** initialize the PUT request body into an associative array to send to Tom's PUT service */
-$put_request = array('user' => '', 'exam' => '', 'question' => '', 'autoGrade' => '', 'adjustedGrade' => '', 'testCaseResponse' => array());
+$put_request = array('user' => '', 'exam' => '', 'question' => '', 'autograde' => '', 'adjustedGrade' => '', 'testCaseResponse' => array());
 
 // response for successful grading
 $grader_response = array('isFullExamGraded' => '');
@@ -109,7 +109,16 @@ class Grader {
     return $this->student_func;
   }
 
+  function set_constraint($constraint) {
+    $this->constraint = $constraint;
+  }
+
+  function get_constraint() {
+    return $this->constraint;
+  }
+
   // return the student's function name output
+  // TODO: remove $question as input
   public function get_student_named_function($question, $answer) {
     $student_named_function = "";
 
@@ -127,15 +136,43 @@ class Grader {
   }
 
   // return a grade for the student's raw answer based on correctness
-  public function grade_func_name($student_func, $question, $weight) {
+  public function grade_func_name($student_func, $question, $weight, $testcase_amount) {
     $score = 0;
 
     // the function name is 25% of the score of each question
-    $function_weight = ($weight * 25)/100;
+    $function_weight =  $weight / $testcase_amount;
 
     // ++score if the question is correct, else don't add score
     if ($question == $student_func) {
       $score += $function_weight;
+    } else {
+      $score += 0;
+    }
+
+    return $score;
+  }
+
+  // return a grade for colon
+  public function grade_colon($answer, $weight, $testcase_amount) {
+    $score = 0;
+
+    $first_line = strstr($answer, "\n", true);
+
+    if (strpos($first_line, ":") !== false) {
+      $score += $weight / $testcase_amount;
+    } else {
+      $score += 0;
+    }
+
+    return $score;
+  }
+
+  // return a grade for constraints
+  public function grade_constraint($constraint, $answer, $weight, $testcase_amount) {
+    $score = 0;
+
+    if (strpos($answer, $constraint) !== false) {
+      $score += $weight / $testcase_amount;
     } else {
       $score += 0;
     }
@@ -149,10 +186,12 @@ class Grader {
     $callFunction = "print(" . $question . "($input))";
     $pythonListing = "$answer\n\n$callFunction";
     
-    $pythonfile = file_put_contents('exam.py', $pythonListing);
+    $filename = $question . '.py';
+    // use the student's function name to run the python interpreter
+    $pythonfile = file_put_contents($filename, $pythonListing);
     // execute python text file
     // return result of file
-    $student_result = shell_exec("python3 exam.py");
+    $student_result = shell_exec("python " . $filename . " 2>&1");
 
     return trim($student_result);
   }
@@ -162,7 +201,7 @@ class Grader {
     $score = 0;
 
     // each question can have any # of test cases each so each question is worth 75% / n testCases
-    $test_case_weight = (($weight * 75)/100)/$testcase_amount;
+    $test_case_weight = $weight / $testcase_amount;
 
     // if testcase is correct, +75% of the question - needed to trim the newline from the python output
     if (trim($student_result) == $output) {
@@ -210,12 +249,19 @@ if (isset($json['exam']) && isset($json['user'])) {
       
       // final_score
       $final_question_score = 0;
+      $subitem_count = 0;
 
       // set each question, answer, score, # of test cases to pass to the grader
       $grader->set_question($db_validation['results'][$i]['question']);
       $grader->set_answer($db_validation['results'][$i]['answer']);
       $grader->set_weight($get_score_validation['questions'][$i]['score']);
-      $grader->set_testcase_amount(count($get_score_validation['questions'][$i]['testCases']));
+      $grader->set_constraint($db_validation['results'][$i]['questionConstraint']);
+      $check_constraint = $grader->get_constraint();
+      if ($check_constraint == null) {
+        $grader->set_testcase_amount(count($get_score_validation['questions'][$i]['testCases']) + 2);
+      } else {
+        $grader->set_testcase_amount(count($get_score_validation['questions'][$i]['testCases']) + 3);
+      }
 
       // get the student's answer to the function name to store in the update result service
       $student_named = $grader->get_student_named_function($grader->get_question(), $grader->get_answer());
@@ -223,9 +269,50 @@ if (isset($json['exam']) && isset($json['user'])) {
       $testCaseResponseObject['studentOutput'] = $student_named;
       
       // call the function grader and store the grade
-      $test_score = $grader->grade_func_name($grader->get_student_func(), $grader->get_question(), $grader->get_weight());
-      $final_question_score += $test_score;
-      $testCaseResponseObject['score'] = $test_score;
+      $func_score = $grader->grade_func_name($grader->get_student_func(), $grader->get_question(), $grader->get_weight(), $grader->get_testcase_amount());
+      $final_question_score += round($func_score, 2);
+      $testCaseResponseObject['subItem'] = 'Function spelling';
+      $testCaseResponseObject['expectedOutput'] = $db_validation['results'][$i]['question'];
+      $testCaseResponseObject['score'] = round($func_score, 2);
+      $testCaseResponseObject['comment'] = '';
+
+      // add itemized function name score to response
+      $testCaseResponse[] = $testCaseResponseObject;
+      
+      $first_line_expected = 'Colon located at the end of line 1';
+      // test the colon
+      $colon_score = $grader->grade_colon($grader->get_answer(), $grader->get_weight(), $grader->get_testcase_amount());
+      $final_question_score += round($colon_score, 2);
+      $testCaseResponseObject['score'] = round($colon_score, 2);
+      $testCaseResponseObject['subItem'] = 'Colon check';
+      $testCaseResponseObject['expectedOutput'] = $first_line_expected;
+      if ($colon_score > 0) {
+        $testCaseResponseObject['studentOutput'] = 'Colon located';
+      } else {
+        $testCaseResponseObject['studentOutput'] = 'Colon missing';
+      }
+      
+      // add itemized colon score to response
+      $testCaseResponse[] = $testCaseResponseObject;
+    
+      // test the constraint
+      $constraint_score = $grader->grade_constraint($grader->get_constraint(), $grader->get_answer(), $grader->get_weight(), $grader->get_testcase_amount());
+      $final_question_score += round($constraint_score, 2);
+      $testCaseResponseObject['score'] = round($constraint_score, 2);
+      $testCaseResponseObject['subItem'] = 'Constraint check';
+      if ($constraint_score > 0) {
+        $testCaseResponseObject['expectedOutput'] = $db_validation['results'][$i]['questionConstraint'];
+        $testCaseResponseObject['studentOutput'] = 'Constraint located';
+      } else {
+        if ($check_constraint == null) {
+          $testCaseResponseObject['expectedOutput'] = 'Constraint not applied in this question';
+          $testCaseResponseObject['studentOutput'] = 'Constraint not applied in this question';
+        } else {
+          $testCaseResponseObject['studentOutput'] = 'Constraint missing';
+        }
+      }
+
+      // add itemized constraint score to response
       $testCaseResponse[] = $testCaseResponseObject;
 
       // set each question's test cases' input and output to the grader
@@ -234,17 +321,18 @@ if (isset($json['exam']) && isset($json['user'])) {
         $grader->set_test_output($db_validation['results'][$i]['testCases'][$j]['output']);
 
         // get the student's output result
-        $student_output = $grader->get_student_output($grader->get_test_input(), $grader->get_question(), $grader->get_answer());
+        $student_output = $grader->get_student_output($grader->get_test_input(), $grader->get_student_func(), $grader->get_answer());
         $grader->set_student_result($student_output);
 
         // call the test case grader and store the grade
-        $func_score = $grader->grade_test_case($grader->get_student_result(), $grader->get_test_output(), $grader->get_weight(), $grader->get_testcase_amount());
-        $final_question_score += $func_score;
+        $testcase_score = $grader->grade_test_case($grader->get_student_result(), $grader->get_test_output(), $grader->get_weight(), $grader->get_testcase_amount());
+        $final_question_score += round($testcase_score, 2);
 
-        $testCaseResponseObject['input'] = $db_validation['results'][$i]['testCases'][$j]['input'];
-        $testCaseResponseObject['output'] = $db_validation['results'][$i]['testCases'][$j]['output'];
+        $test_case_id = $j + 1;
+        $testCaseResponseObject['subItem'] = 'Test case ' . $test_case_id;
+        $testCaseResponseObject['expectedOutput'] = $db_validation['results'][$i]['testCases'][$j]['output'];
         $testCaseResponseObject['studentOutput'] = $student_output;
-        $testCaseResponseObject['score'] = $func_score;
+        $testCaseResponseObject['score'] = round($testcase_score, 2);
 
         // add each test case itemization to the json array for the question
         $testCaseResponse[] = $testCaseResponseObject;
@@ -254,8 +342,8 @@ if (isset($json['exam']) && isset($json['user'])) {
       $put_request['user'] = $db_validation['user'];
       $put_request['exam'] = $db_validation['exam'];
       $put_request['question'] = $db_validation['results'][$i]['question'];
-      $put_request['autograde'] = $final_question_score;
-      $put_request['adjustedGrade'] = $final_question_score;
+      $put_request['autograde'] = round($final_question_score);
+      $put_request['adjustedGrade'] = round($final_question_score);
       $put_request['testCaseResponse'] = $testCaseResponse;
       $put_json_request = json_encode($put_request);
 
@@ -265,7 +353,7 @@ if (isset($json['exam']) && isset($json['user'])) {
       $put_controller->setUrl($put_exam_result);
       $put_controller->setBody($put_json_request);
       $put_curl = $put_controller->curl_put_request($put_controller->getUrl(), $put_controller->getBody());
-      
+      //echo $put_curl;
       // validate each question was graded successfully
       $put_validation = json_decode($put_curl, true);
       if ($put_validation['update'] == 'true') {
