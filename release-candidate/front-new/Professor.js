@@ -185,7 +185,7 @@ function renderHeaders(headers, table) {
 function genColumn(item, row) {
   if (!Array.isArray(item)) {
     var tdElement = document.createElement('td');
-    tdElement.innerHTML = '<p style="white-space:pre-wrap">' + item + '</p>';
+    tdElement.innerHTML =  item;
     row.appendChild(tdElement);
   }
 }
@@ -467,12 +467,13 @@ function onSubmit(event) {
   let testCaseOutput1 = document.getElementById('testCaseOutput1');
   let testCaseInput2 = document.getElementById('testCaseInput2');
   let testCaseOutput2 = document.getElementById('testCaseOutput2');
-
+  let questionconstraint = document.getElementById('constraint');
   let json = {
     name: questionName.value,
     description: questionDescription.value,
     difficulty: questionDifficulty.value,
     category: questionCategory.value,
+    questionConstraint: questionconstraint.value,
     testCases: [
       { input: testCaseInput1.value, output: testCaseOutput1.value },
       { input: testCaseInput2.value, output: testCaseOutput2.value },
@@ -576,7 +577,7 @@ function init() {
 
 function addcase()
 {
-  var mainlist = document.getElementById("list");
+  var mainlist = document.getElementById("testCaseList");
   if(counter < 7)
   {
 
