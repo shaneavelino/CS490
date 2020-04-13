@@ -138,7 +138,7 @@ async function confirmGrades(event) {
 function assignExam(event) {
   event.preventDefault();
   const assignForm = document.querySelector('#assignForm');
-  let formVal = event.explicitOriginalTarget.value;
+  let formVal = event.submitter.value;
   let jsonData = {};
   if (formVal === 'Assign') {
     let exams = getCheckedStudents('aTable');
@@ -156,6 +156,8 @@ function assignExam(event) {
         );
       });
     });
+    let confirmMsg = document.getElementById("assignResponse");
+    confirmMsg.innerText = "Exams Assigned";
   }
   if (formVal === 'close') {
     let exams = getCheckedStudents('aTable');
@@ -167,6 +169,8 @@ function assignExam(event) {
         JSON.stringify(jsonData)
       );
     });
+    let confirmMsg = document.getElementById("assignResponse");
+    confirmMsg.innerText = "Exams Closed";
   }
 }
 
