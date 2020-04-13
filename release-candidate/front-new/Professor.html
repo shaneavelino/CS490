@@ -52,7 +52,7 @@
       <h2>Create a Question</h2>
       <div class="question-form">
         <form id="qForm" method="POST" action="#">
-          <ul class="flex-form">
+          <ul class="flex-form" id="testCaseList">
             <li>
               <label for="name">Question:</label>
               <input
@@ -64,12 +64,12 @@
             </li>
             <li>
               <label for="description">Description:</label>
-              <input
+              <textarea
                 id="description"
-                type="text"
                 name="description"
-                placeholder="Description"
-              />
+                placeholder="Enter Question Description"
+                rows="4" cols="50"
+              ></textarea>
             </li>
             <li>
               <label for="difficulty">Difficulty:</label>
@@ -175,19 +175,10 @@
           </select>
           <label for="constraintSelect">Constraint</label>
           <select id="constraintSelect">
-            <option value="none">None</option>
-            <option value="lists">Lists</option>
-            <option value="turtles">Turtles</option>
-            <option value="if">If</option>
-            <option value="ForLoops">For Loops</option>
-            <option value="Def">Def</option>
-            <option value="While">While</option>
-            <option value="StringMethods">String Methods</option>
-            <option value="Files">Files</option>
-            <option value="Dictionaries">Dictionaries</option>
-            <option value="Namespaces">Namespaces</option>
-            <option value="Exceptions">Exceptions</option>
-            <option value="Classes">Classes</option>
+             <option value="none">None</option>
+             <option value="for">For</option>
+             <option value="while">While</option>
+             <option value="print">Print</option>
           </select>
           <label for="SearchText">Keyword</label>
           <input type="text" id="SearchText" />
