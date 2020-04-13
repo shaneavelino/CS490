@@ -119,14 +119,27 @@ function getsubItemsUpdate(table){
    let questionResponse = [];
    for (var i = 1, row; (row = table.rows[i]); i++) {
       questionResponse.push({
-         Input: row.cells[0].innerHTML,
-         Output: row.cells[1].innerHTML, 
-         studentOutput: row.cells[2].innerHTML, 
-         score: row.cells[3].firstChild.value,
-         comments: row.cells[4].firstChild.value 
+         subItem: row.cells[0].innerHTML,
+         Input: row.cells[1].innerHTML,
+         expectedOutput: row.cells[2].innerHTML, 
+         studentOutput: row.cells[3].innerHTML, 
+         score: row.cells[4].firstChild.value,
+         comments: row.cells[5].firstChild.value 
       });
    }
    return(questionResponse);
+}
+
+//totals adjusted Grades 
+function totalGradePoints(table){
+    let sum = 0; 
+    for (var i = 1, row; (row = table.rows[i]); i++) {
+        console.log(parseFloat(row.cells[4].firstChild.value));
+        sum += parseFloat(row.cells[4].firstChild.value); 
+    }
+    console.log(sum);
+    return sum; 
+
 }
 
 // confirm grades
@@ -141,6 +154,7 @@ async function confirmGrades(event) {
       question: row.cells[1].innerHTML,
       questionConstraint: row.cells[2].innerHTML,
       autograde: row.cells[4].innerHTML,
+      adjustedGrade:     totalGradePoints(table.rows[i+1].cells[3].childNodes[0]),
       testCaseResponse:  getsubItemsUpdate(table.rows[i+1].cells[3].childNodes[0])
     };
     submitJsonData(
@@ -343,33 +357,6 @@ async function gradeExam(event) {
   let data = await postJsonData(gradeUrl, body);
   renderGradeTable(data, val);
 }
-// render grade details
-function renderGradeDetails(gradeDetails, tr) {
-  var subTable = document.createElement('table');
-  tr.appendChild(subTable);
-  var subTr = document.createElement('tr');
-  subTable.appendChild(subTr);
-  var thElement = document.createElement('th');
-  thElement.innerHTML = 'Partial Score';
-  subTr.appendChild(thElement);
-  var thElement = document.createElement('th');
-  thElement.innerHTML = 'Comments';
-  subTr.appendChild(thElement);
-
-  gradeDetails.map((detail) => {
-    var subTr = document.createElement('tr');
-    subTable.appendChild(subTr);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
-    subTr.appendChild(tdElement);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML =
-      "<textarea rows='4' cols='50'>Instructor comments</textarea>";
-    subTr.appendChild(tdElement);
-  });
-  return;
-}
-
 
 // render grade details
 function renderGradeDetails(gradeDetails, tr) {
@@ -385,6 +372,7 @@ function renderGradeDetails(gradeDetails, tr) {
   tr.appendChild(tabElement);
     renderHeaders(
     [
+      'Question Component',
       'Input',
       'Output', 
       'Student Output',
@@ -398,10 +386,13 @@ function renderGradeDetails(gradeDetails, tr) {
       var subTr = document.createElement('tr');
       subTable.appendChild(subTr);
       var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.subItem;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
       tdElement.innerHTML =  detail.input !== undefined ? detail.input : 'N/A' ;
       subTr.appendChild(tdElement);
       var tdElement = document.createElement('td');
-      tdElement.innerHTML =  detail.output !== undefined ? detail.output : 'N/A' ;
+      tdElement.innerHTML =  detail.expectedOutput !== undefined ? detail.expectedOutput : 'N/A' ;
       subTr.appendChild(tdElement);
       var tdElement = document.createElement('td');
       tdElement.innerHTML =  detail.studentOutput !== undefined ? detail.studentOutput : 'N/A' ;
