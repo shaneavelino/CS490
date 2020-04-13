@@ -114,17 +114,34 @@ function getCheckedStudents(table) {
   return checkedRows;
 }
 
+// grabs professor updates from sub table 
+function getsubItemsUpdate(table){
+   let questionResponse = [];
+   for (var i = 1, row; (row = table.rows[i]); i++) {
+      questionResponse.push({
+         Input: row.cells[0].innerHTML,
+         Output: row.cells[1].innerHTML, 
+         studentOutput: row.cells[2].innerHTML, 
+         score: row.cells[3].firstChild.value,
+         comments: row.cells[4].firstChild.value 
+      });
+   }
+   return(questionResponse);
+}
+
 // confirm grades
 async function confirmGrades(event) {
   event.preventDefault();
   const table = document.querySelector('#gTable');
-  for (var i = 1, row; (row = table.rows[i]); i++) {
+  for (var i = 1, row; (row = table.rows[i]); i+=2) {
     jsonData = {
-      user: row.cells[1].innerHTML,
+      user: row.cells[0].innerHTML,
       exam: selectedExam,
       adjustedGrade: row.cells[0].firstChild.value,
-      question: row.cells[2].innerHTML,
+      question: row.cells[1].innerHTML,
+      questionConstraint: row.cells[2].innerHTML,
       autograde: row.cells[4].innerHTML,
+      testCaseResponse:  getsubItemsUpdate(table.rows[i+1].cells[3].childNodes[0])
     };
     submitJsonData(
       'https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php',
@@ -132,6 +149,9 @@ async function confirmGrades(event) {
       JSON.stringify(jsonData)
     );
   }
+  
+  let confirmMsg = document.getElementById("updateGradeNotification");
+  confirmMsg.innerText = "Exam Graded";
   gradeExam(document.createEvent('Event'));
 }
 
@@ -359,8 +379,10 @@ function renderGradeDetails(gradeDetails, tr) {
   tr.appendChild(padding1);
   tr.appendChild(padding2);
   tr.appendChild(padding3);
+  var tabElement = document.createElement('td');
   var subTable = document.createElement('table');
-  tr.appendChild(subTable);
+  tabElement.appendChild(subTable);
+  tr.appendChild(tabElement);
     renderHeaders(
     [
       'Input',
