@@ -257,7 +257,7 @@ if (isset($json['exam']) && isset($json['user'])) {
       $grader->set_weight($get_score_validation['questions'][$i]['score']);
       $grader->set_constraint($db_validation['results'][$i]['questionConstraint']);
       $check_constraint = $grader->get_constraint();
-      if ($check_constraint == null) {
+      if ($check_constraint == null || $check_constraint == 'N/A') {
         $grader->set_testcase_amount(count($get_score_validation['questions'][$i]['testCases']) + 2);
       } else {
         $grader->set_testcase_amount(count($get_score_validation['questions'][$i]['testCases']) + 3);
@@ -272,9 +272,10 @@ if (isset($json['exam']) && isset($json['user'])) {
       $func_score = $grader->grade_func_name($grader->get_student_func(), $grader->get_question(), $grader->get_weight(), $grader->get_testcase_amount());
       $final_question_score += round($func_score, 2);
       $testCaseResponseObject['subItem'] = 'Function spelling';
+      $testCaseResponseObject['input'] = 'N/A';
       $testCaseResponseObject['expectedOutput'] = $db_validation['results'][$i]['question'];
       $testCaseResponseObject['score'] = round($func_score, 2);
-      $testCaseResponseObject['comment'] = '';
+      $testCaseResponseObject['comments'] = '';
 
       // add itemized function name score to response
       $testCaseResponse[] = $testCaseResponseObject;
@@ -285,6 +286,7 @@ if (isset($json['exam']) && isset($json['user'])) {
       $final_question_score += round($colon_score, 2);
       $testCaseResponseObject['score'] = round($colon_score, 2);
       $testCaseResponseObject['subItem'] = 'Colon check';
+      $testCaseResponseObject['input'] = 'N/A';
       $testCaseResponseObject['expectedOutput'] = $first_line_expected;
       if ($colon_score > 0) {
         $testCaseResponseObject['studentOutput'] = 'Colon located';
@@ -300,11 +302,12 @@ if (isset($json['exam']) && isset($json['user'])) {
       $final_question_score += round($constraint_score, 2);
       $testCaseResponseObject['score'] = round($constraint_score, 2);
       $testCaseResponseObject['subItem'] = 'Constraint check';
+      $testCaseResponseObject['input'] = 'N/A';
       if ($constraint_score > 0) {
         $testCaseResponseObject['expectedOutput'] = $db_validation['results'][$i]['questionConstraint'];
         $testCaseResponseObject['studentOutput'] = 'Constraint located';
       } else {
-        if ($check_constraint == null) {
+        if ($check_constraint == null || $check_constraint == 'N/A') {
           $testCaseResponseObject['expectedOutput'] = 'Constraint not applied in this question';
           $testCaseResponseObject['studentOutput'] = 'Constraint not applied in this question';
         } else {
@@ -330,6 +333,7 @@ if (isset($json['exam']) && isset($json['user'])) {
 
         $test_case_id = $j + 1;
         $testCaseResponseObject['subItem'] = 'Test case ' . $test_case_id;
+        $testCaseResponseObject['input'] = $grader->get_test_input();
         $testCaseResponseObject['expectedOutput'] = $db_validation['results'][$i]['testCases'][$j]['output'];
         $testCaseResponseObject['studentOutput'] = $student_output;
         $testCaseResponseObject['score'] = round($testcase_score, 2);

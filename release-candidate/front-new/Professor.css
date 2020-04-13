@@ -168,3 +168,8 @@ body {
 .result-header {
   background-color: rgba(112, 128, 144, 0.25);
 }
+
+.updateGradeForm{
+  white-space: pre;
+  text-align-last: left;
+}

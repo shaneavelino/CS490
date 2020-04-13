@@ -37,8 +37,62 @@ ul
   margin-top: 10px;
 }
 
+.eForm-eName input[type='submit'] {
+  background-color: slategray;
+  color: white;
+  padding: 4px 10px;
+  font-size: inherit;
+  font-family: 'Lucida Sans Unicode', sans-serif;
+  cursor: pointer;
+}
+
+#selected-questions input[type='button'] {
+  background-color: slategray;
+  color: white;
+  padding: 4px 10px;
+  font-size: inherit;
+  font-family: 'Lucida Sans Unicode', sans-serif;
+  cursor: pointer;
+}
+
 .eForm-table {
   width: 100%;
+}
+
+.assign-exam-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.assign-close-container {
+  align-items: center;
+  width: 100%;
+}
+
+.assign-close {
+  display: flex;
+  align-items: center;
+}
+
+.assign-close input[type='submit'] {
+  background-color: slategray;
+  color: white;
+  padding: 10px 20px;
+  font-size: inherit;
+  font-family: 'Lucida Sans Unicode', sans-serif;
+  float: right;
+  cursor: pointer;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.assign-close-tables td {
+  width: 50%;
+}
+
+.assign-close-tables table {
+  margin-bottom: 25px;
 }
 
 .exam-container {
