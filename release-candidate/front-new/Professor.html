@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<meta charset="utf-8" />
+<meta charset='utf-8' />
 <html>
   <head>
     <title>Exam Portal</title>
@@ -203,17 +203,24 @@
       </div>
     </div>
     <div id="examAssign" hidden>
-      <h2>Assign and Close Exams</h2>
-      <form id="assignForm">
-       <p id="assignResponse"></p>
-        <input type="submit" value="Assign" />
-        <input type="submit" value="close" /><br />
-        <label for="sTable">Students</label>
-        <table id="sTable"></table>
-        <label for="aTable">Exams</label>
-        <table id="aTable"></table>
-      </form>
-    </div> 
+      <div class="assign-exam-container">
+        <h2>Assign and Close Exams</h2>
+        <div class="assign-close-container">
+          <form id="assignForm">
+            <div class="assign-close">
+              <input type="submit" value="Assign" />
+              <input type="submit" value="close" />
+            </div>
+            <div class="assign-close-tables">
+              <label for="sTable">Students</label>
+              <table id="sTable"></table>
+              <label for="aTable">Exams</label>
+              <table id="aTable"></table>
+            </div>
+          </form>
+          </div>
+      </div>
+    </div>
     <div id="gradeExam" hidden>
       <h2>Grade Exam</h2>
       <form id="gradeForm">

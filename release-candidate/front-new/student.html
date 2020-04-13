@@ -30,7 +30,8 @@
 
       function logout() {
         let homepage =
-          'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+          //'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+          'http://localhost:3000/release-candidate/front-new/login.html';
 
         window.location.href = homepage;
 
@@ -424,10 +425,11 @@
 
                 var resultsHeader = [
                   'subItem',
+                  'input',
                   'expectedOutput',
                   'studentOutput',
                   'score',
-                  'comment',
+                  'comments',
                 ];
 
                 var tr = document.createElement('tr');

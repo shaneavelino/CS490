@@ -34,7 +34,6 @@ function addToExamList() {
   }
   let finalQuestions = removeDuplicateQuestions(examFinal);
 
-  console.log(finalQuestions);
   let selectedQuestions = document.getElementById('selected-questions');
   // show the unique questions on the screen
   let p = document.createElement('p');
@@ -223,7 +222,7 @@ function renderHeaders(headers, table) {
 function genColumn(item, row) {
   if (!Array.isArray(item)) {
     var tdElement = document.createElement('td');
-    tdElement.innerHTML =  item;
+    tdElement.innerHTML = item;
     row.appendChild(tdElement);
   }
 }
@@ -300,8 +299,8 @@ async function renderQuestions() {
     if (category !== 'none' && currentVal.category !== category) {
       return;
     }
-    if (constraint !== 'none' && currentVal.questionConstraint !== constraint){
-      return; 
+    if (constraint !== 'none' && currentVal.questionConstraint !== constraint) {
+      return;
     }
 
     genQuestion(currentVal, table);
@@ -357,7 +356,6 @@ async function gradeExam(event) {
   let data = await postJsonData(gradeUrl, body);
   renderGradeTable(data, val);
 }
-
 // render grade details
 function renderGradeDetails(gradeDetails, tr) {
   var padding1 = document.createElement('td');
@@ -413,7 +411,7 @@ function renderGradeTable(data, exam) {
   let table = document.querySelector('#gTable');
   table.innerHTML = '';
   renderHeaders(
-    [ 
+    [
       'Student',
       'Question',
       'Constraint',
@@ -496,12 +494,12 @@ function onSubmit(event) {
       { input: testCaseInput2.value, output: testCaseOutput2.value },
     ],
   };
-  
+
   function caseFunc() {
     var newInput = document.getElementById('testCaseInput' + cases);
     var newOutput = document.getElementById('testCaseOutput' + cases);
     if (newInput && newOutput) {
-      var results = {input: '', output: ''};
+      var results = { input: '', output: '' };
       results['input'] = newInput.value;
       results['output'] = newOutput.value;
       json['testCases'].push(results);
@@ -511,8 +509,8 @@ function onSubmit(event) {
       return 0;
     }
   }
-  
-  while(caseFunc()) {}
+
+  while (caseFunc()) {}
 
   var data = JSON.stringify(json);
 
@@ -534,7 +532,7 @@ function applyFilters(event) {
   event.preventDefault();
   category = document.getElementById('categorySelect').value;
   dificulty = document.getElementById('difficultySelect').value;
-  constraint = document.getElementById('constraintSelect').value; 
+  constraint = document.getElementById('constraintSelect').value;
   searchString = document.getElementById('SearchText').value;
   renderQuestions();
 }
@@ -564,7 +562,8 @@ function visibilityChange(element) {
 
 function logout() {
   let homepage =
-    'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+    //'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+    'http://localhost:3000/release-candidate/front-new/login.html';
 
   window.location.href = homepage;
 
@@ -592,34 +591,35 @@ function init() {
   renderGrader(user);
 }
 
-function addcase()
-{
-  var mainlist = document.getElementById("testCaseList");
-  if(counter < 7)
-  {
+function addcase() {
+  var mainlist = document.getElementById('testCaseList');
+  if (counter < 7) {
+    var list = document.createElement('li');
+    var label = document.createElement('label');
+    var inputCase = document.createElement('input');
+    var outputCase = document.createElement('input');
 
-    var list = document.createElement("li");
-    var label = document.createElement("label");
-    var inputCase = document.createElement("input");
-    var outputCase = document.createElement("input");
+    label.setAttribute('for', 'testcase' + counter);
+    label.innerText = 'Test Case ' + counter + ': ';
 
-    label.setAttribute("for","testcase"+counter);
-    label.innerText = "Test Case "+counter+": ";
+    inputCase.setAttribute('id', 'testCaseInput' + counter);
+    inputCase.setAttribute('type', 'text');
+    inputCase.setAttribute('placeholder', 'Input ' + counter);
+    outputCase.setAttribute('id', 'testCaseOutput' + counter);
+    outputCase.setAttribute('type', 'text');
+    outputCase.setAttribute('placeholder', 'Output ' + counter);
 
-    inputCase.setAttribute("id","testCaseInput"+counter);inputCase.setAttribute("type","text");
-    inputCase.setAttribute("placeholder","Input "+counter);
-    outputCase.setAttribute("id","testCaseOutput"+counter);outputCase.setAttribute("type","text");
-    outputCase.setAttribute("placeholder","Output "+counter);
+    list.appendChild(label);
+    list.appendChild(inputCase);
+    list.appendChild(outputCase);
 
-    list.appendChild(label);list.appendChild(inputCase);list.appendChild(outputCase);
-    
     mainlist.appendChild(list);
 
     counter++;
   }
 }
 
-//globals 
+//globals
 var counter = 3;
 var cases = 3;
 var category = 'none';
