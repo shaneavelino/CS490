@@ -113,17 +113,48 @@ function getCheckedStudents(table) {
   return checkedRows;
 }
 
+// grabs professor updates from sub table 
+function getsubItemsUpdate(table){
+   let questionResponse = [];
+   for (var i = 1, row; (row = table.rows[i]); i++) {
+      questionResponse.push({
+         subItem: row.cells[0].innerHTML,
+         Input: row.cells[1].innerHTML,
+         expectedOutput: row.cells[2].innerHTML, 
+         studentOutput: row.cells[3].innerHTML, 
+         score: row.cells[4].firstChild.value,
+         comments: row.cells[5].firstChild.value 
+      });
+   }
+   return(questionResponse);
+}
+
+//totals adjusted Grades 
+function totalGradePoints(table){
+    let sum = 0; 
+    for (var i = 1, row; (row = table.rows[i]); i++) {
+        console.log(parseFloat(row.cells[4].firstChild.value));
+        sum += parseFloat(row.cells[4].firstChild.value); 
+    }
+    console.log(sum);
+    return sum; 
+
+}
+
 // confirm grades
 async function confirmGrades(event) {
   event.preventDefault();
   const table = document.querySelector('#gTable');
-  for (var i = 1, row; (row = table.rows[i]); i++) {
+  for (var i = 1, row; (row = table.rows[i]); i+=2) {
     jsonData = {
-      user: row.cells[1].innerHTML,
+      user: row.cells[0].innerHTML,
       exam: selectedExam,
       adjustedGrade: row.cells[0].firstChild.value,
-      question: row.cells[2].innerHTML,
+      question: row.cells[1].innerHTML,
+      questionConstraint: row.cells[2].innerHTML,
       autograde: row.cells[4].innerHTML,
+      adjustedGrade:     totalGradePoints(table.rows[i+1].cells[3].childNodes[0]),
+      testCaseResponse:  getsubItemsUpdate(table.rows[i+1].cells[3].childNodes[0])
     };
     submitJsonData(
       'https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php',
@@ -131,13 +162,16 @@ async function confirmGrades(event) {
       JSON.stringify(jsonData)
     );
   }
+  
+  let confirmMsg = document.getElementById("updateGradeNotification");
+  confirmMsg.innerText = "Exam Graded";
   gradeExam(document.createEvent('Event'));
 }
 
 function assignExam(event) {
   event.preventDefault();
   const assignForm = document.querySelector('#assignForm');
-  let formVal = event.explicitOriginalTarget.value;
+  let formVal = event.submitter.value;
   let jsonData = {};
   if (formVal === 'Assign') {
     let exams = getCheckedStudents('aTable');
@@ -155,6 +189,8 @@ function assignExam(event) {
         );
       });
     });
+    let confirmMsg = document.getElementById("assignResponse");
+    confirmMsg.innerText = "Exams Assigned";
   }
   if (formVal === 'close') {
     let exams = getCheckedStudents('aTable');
@@ -166,6 +202,8 @@ function assignExam(event) {
         JSON.stringify(jsonData)
       );
     });
+    let confirmMsg = document.getElementById("assignResponse");
+    confirmMsg.innerText = "Exams Closed";
   }
 }
 
@@ -320,66 +358,49 @@ async function gradeExam(event) {
 }
 // render grade details
 function renderGradeDetails(gradeDetails, tr) {
-  var subTable = document.createElement('table');
-  tr.appendChild(subTable);
-  var subTr = document.createElement('tr');
-  subTable.appendChild(subTr);
-  var thElement = document.createElement('th');
-  thElement.innerHTML = 'Partial Score';
-  subTr.appendChild(thElement);
-  var thElement = document.createElement('th');
-  thElement.innerHTML = 'Comments';
-  subTr.appendChild(thElement);
-
-  gradeDetails.map((detail) => {
-    var subTr = document.createElement('tr');
-    subTable.appendChild(subTr);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
-    subTr.appendChild(tdElement);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML =
-      "<textarea rows='4' cols='50'>Instructor comments</textarea>";
-    subTr.appendChild(tdElement);
-  });
-  return;
-}
-
-// render grade details
-function renderGradeDetails(gradeDetails, tr) {
   var padding1 = document.createElement('td');
   var padding2 = document.createElement('td');
   var padding3 = document.createElement('td');
   tr.appendChild(padding1);
   tr.appendChild(padding2);
   tr.appendChild(padding3);
+  var tabElement = document.createElement('td');
   var subTable = document.createElement('table');
-  tr.appendChild(subTable);
-  renderHeaders(
-    ['Input', 'Output', 'Student Output', 'Partial Score', 'Comments'],
+  tabElement.appendChild(subTable);
+  tr.appendChild(tabElement);
+    renderHeaders(
+    [
+      'Question Component',
+      'Input',
+      'Output', 
+      'Student Output',
+      'Partial Score',
+      'Comments'
+    ],
     subTable
   );
 
   gradeDetails.map((detail) => {
-    var subTr = document.createElement('tr');
-    subTable.appendChild(subTr);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML = detail.input !== undefined ? detail.input : 'N/A';
-    subTr.appendChild(tdElement);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML = detail.output !== undefined ? detail.output : 'N/A';
-    subTr.appendChild(tdElement);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML =
-      detail.studentOutput !== undefined ? detail.studentOutput : 'N/A';
-    subTr.appendChild(tdElement);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
-    subTr.appendChild(tdElement);
-    var tdElement = document.createElement('td');
-    tdElement.innerHTML =
-      "<textarea rows='4' cols='50'>Instructor comments</textarea>";
-    subTr.appendChild(tdElement);
+      var subTr = document.createElement('tr');
+      subTable.appendChild(subTr);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.subItem;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.input !== undefined ? detail.input : 'N/A' ;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.expectedOutput !== undefined ? detail.expectedOutput : 'N/A' ;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML =  detail.studentOutput !== undefined ? detail.studentOutput : 'N/A' ;
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
+      subTr.appendChild(tdElement);
+      var tdElement = document.createElement('td');
+      tdElement.innerHTML = "<textarea rows='4' cols='50' placeholder='Instructor comments'></textarea>";
+      subTr.appendChild(tdElement);
   });
   return;
 }
