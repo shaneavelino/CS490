@@ -478,6 +478,23 @@ function onSubmit(event) {
       { input: testCaseInput2.value, output: testCaseOutput2.value },
     ],
   };
+  
+  function caseFunc() {
+    var newInput = document.getElementById('testCaseInput' + cases);
+    var newOutput = document.getElementById('testCaseOutput' + cases);
+    if (newInput && newOutput) {
+      var results = {input: '', output: ''};
+      results['input'] = newInput.value;
+      results['output'] = newOutput.value;
+      json['testCases'].push(results);
+      cases++;
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+  
+  while(caseFunc()) {}
 
   var data = JSON.stringify(json);
 
@@ -556,7 +573,37 @@ function init() {
   renderStudents();
   renderGrader(user);
 }
-//globals
+
+function addcase()
+{
+  var mainlist = document.getElementById("list");
+  if(counter < 7)
+  {
+
+    var list = document.createElement("li");
+    var label = document.createElement("label");
+    var inputCase = document.createElement("input");
+    var outputCase = document.createElement("input");
+
+    label.setAttribute("for","testcase"+counter);
+    label.innerText = "Test Case "+counter+": ";
+
+    inputCase.setAttribute("id","testCaseInput"+counter);inputCase.setAttribute("type","text");
+    inputCase.setAttribute("placeholder","Input "+counter);
+    outputCase.setAttribute("id","testCaseOutput"+counter);outputCase.setAttribute("type","text");
+    outputCase.setAttribute("placeholder","Output "+counter);
+
+    list.appendChild(label);list.appendChild(inputCase);list.appendChild(outputCase);
+    
+    mainlist.appendChild(list);
+
+    counter++;
+  }
+}
+
+//globals 
+var counter = 3;
+var cases = 3;
 var category = 'none';
 var dificulty = 'none';
 var constraint = 'none';
