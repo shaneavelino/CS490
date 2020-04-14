@@ -182,8 +182,15 @@ class Grader {
 
   // return the student's result from the python script
   public function get_student_output($input, $question, $answer) {
+
+    // check for print statement in student answer, so we can create different test in python
+    if (strpos($answer, "print")) {
+      $callFunction = $input . " = '" . $input . "'\n" . $question . "($input)";
+    } else {
+      $callFunction = "print(" . $question . "($input))";
+    }
     // create python text file from input answer, append the function name with the test case input
-    $callFunction = "print(" . $question . "($input))";
+    //$callFunction = "print(" . $question . "($input))";
     $pythonListing = "$answer\n\n$callFunction";
     
     $filename = $question . '.py';
@@ -275,7 +282,6 @@ if (isset($json['exam']) && isset($json['user'])) {
       $testCaseResponseObject['input'] = 'N/A';
       $testCaseResponseObject['expectedOutput'] = $db_validation['results'][$i]['question'];
       $testCaseResponseObject['score'] = round($func_score, 2);
-      $testCaseResponseObject['comments'] = '';
 
       // add itemized function name score to response
       $testCaseResponse[] = $testCaseResponseObject;
@@ -361,7 +367,7 @@ if (isset($json['exam']) && isset($json['user'])) {
       // validate each question was graded successfully
       $put_validation = json_decode($put_curl, true);
       if ($put_validation['update'] == 'true') {
-        $grader_response['isFullExamGraded'] = 'true';  
+        $grader_response['isFullExamGraded'] = 'true';
       } else {
         $grader_response['isFullExamGraded'] = 'false';
       }
