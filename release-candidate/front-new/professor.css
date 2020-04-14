@@ -14,14 +14,24 @@ ul
 
 #filter1
 {
-  width:70%;
+  float:left;
+  margin:none;
+  width:60%;
+}
+
+#createQuestion
+{
+  float:left;
+  padding:none;
+  margin:none;
+  margin-left: 1%;
+  border:none;
 }
 
 .question-form-container
 {
-  margin:auto;
+  margin-right: 3%;
 }
-
 
 .create-exam-container {
   display: flex;
