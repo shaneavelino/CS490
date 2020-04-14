@@ -27,6 +27,7 @@
 
     <script type="text/javascript">
       var studentDiv = document.getElementById('student-container');
+      let examQuestions = [];
 
       function logout() {
         let homepage =
@@ -232,6 +233,9 @@
               );
               li.appendChild(pQuestion);
 
+              // to be able to grab the score for each question in results page
+              examQuestions = response['questions'];
+
               var pDescription = document.createElement('p');
               pDescription.appendChild(
                 document.createTextNode(
@@ -427,7 +431,9 @@
                       ' points' +
                       ' --- Adjusted score: ' +
                       responseObject['results'][i]['adjustedGrade'] +
-                      ' points '
+                      ' out of ' +
+                      examQuestions[i]['score'] +
+                      ' points'
                   )
                 );
 
