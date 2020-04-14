@@ -119,11 +119,10 @@ function getsubItemsUpdate(table){
    for (var i = 1, row; (row = table.rows[i]); i++) {
       questionResponse.push({
          subItem: row.cells[0].innerHTML,
-         Input: row.cells[1].innerHTML,
+         input: row.cells[1].innerHTML,
          expectedOutput: row.cells[2].innerHTML, 
          studentOutput: row.cells[3].innerHTML, 
-         score: row.cells[4].firstChild.value,
-         comments: row.cells[5].firstChild.value 
+         score: row.cells[4].firstChild.value
       });
    }
    return(questionResponse);
@@ -145,7 +144,8 @@ function totalGradePoints(table){
 async function confirmGrades(event) {
   event.preventDefault();
   const table = document.querySelector('#gTable');
-  for (var i = 1, row; (row = table.rows[i]); i+=2) {
+  for (var i = 1, row; (row = table.rows[i]); i+=3) {
+    console.log(table.rows[i+2].cells[3].childNodes[0].value)
     jsonData = {
       user: row.cells[0].innerHTML,
       exam: selectedExam,
@@ -154,18 +154,12 @@ async function confirmGrades(event) {
       questionConstraint: row.cells[2].innerHTML,
       autograde: row.cells[4].innerHTML,
       adjustedGrade:     totalGradePoints(table.rows[i+1].cells[3].childNodes[0]),
+      comment: table.rows[i+2].cells[3].childNodes[0].value,
       testCaseResponse:  getsubItemsUpdate(table.rows[i+1].cells[3].childNodes[0])
     };
     
-    markGraded = {examGraded: "A1TEST"}
-
     submitJsonData(
       'https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php',
-      'PUT',
-      JSON.stringify(jsonData)
-    );
-    submitJsonData(
-      'https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php',
       'PUT',
       JSON.stringify(jsonData)
     );
@@ -362,7 +356,11 @@ async function gradeExam(event) {
   let body = new Object();
   body.fetchAllResultsByExam = val;
   let data = await postJsonData(gradeUrl, body);
-  renderGradeTable(data, val);
+  //delete variables not to print 
+  for (row in data[val]){
+      delete data[val][row].comment;
+      delete data[val][row].finalGrade;
+  }
 }
 // render grade details
 function renderGradeDetails(gradeDetails, tr) {
