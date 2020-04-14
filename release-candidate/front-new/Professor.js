@@ -156,8 +156,16 @@ async function confirmGrades(event) {
       adjustedGrade:     totalGradePoints(table.rows[i+1].cells[3].childNodes[0]),
       testCaseResponse:  getsubItemsUpdate(table.rows[i+1].cells[3].childNodes[0])
     };
+    
+    markGraded = {examGraded: "A1TEST"}
+
     submitJsonData(
       'https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php',
+      'PUT',
+      JSON.stringify(jsonData)
+    );
+    submitJsonData(
+      'https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php',
       'PUT',
       JSON.stringify(jsonData)
     );
@@ -374,8 +382,7 @@ function renderGradeDetails(gradeDetails, tr) {
       'Input',
       'Output', 
       'Student Output',
-      'Partial Score',
-      'Comments'
+      'Partial Score'
     ],
     subTable
   );
@@ -398,9 +405,7 @@ function renderGradeDetails(gradeDetails, tr) {
       var tdElement = document.createElement('td');
       tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
       subTr.appendChild(tdElement);
-      var tdElement = document.createElement('td');
-      tdElement.innerHTML = "<textarea rows='4' cols='50' placeholder='Instructor comments'></textarea>";
-      subTr.appendChild(tdElement);
+     
   });
   return;
 }
@@ -431,6 +436,19 @@ function renderGradeTable(data, exam) {
     var subTableRow = document.createElement('tr');
     renderGradeDetails(row.testCaseResponse, subTableRow);
     table.appendChild(subTableRow);
+    
+    var commentRow = document.createElement('tr');
+    var padding1 = document.createElement('td');
+    var padding2 = document.createElement('td');
+    var padding3 = document.createElement('td');
+    commentRow.appendChild(padding1);
+    commentRow.appendChild(padding2);
+    commentRow.appendChild(padding3);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML = "<textarea rows='8' cols='100' placeholder='Instructor comments'></textarea>";
+    commentRow.appendChild(tdElement);
+    table.appendChild(commentRow);
+
   });
 }
 
@@ -561,9 +579,7 @@ function visibilityChange(element) {
 }
 
 function logout() {
-  let homepage =
-    //'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
-    'http://localhost:3000/release-candidate/front-new/login.html';
+  let homepage ='https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
 
   window.location.href = homepage;
 
