@@ -427,7 +427,6 @@
                   'expectedOutput',
                   'studentOutput',
                   'score',
-                  'comments',
                 ];
 
                 var tr = document.createElement('tr');
@@ -459,8 +458,21 @@
                   table.appendChild(tr);
                 }
 
+                let comment = document.createElement('p');
+                comment.setAttribute('id', 'result-comment');
+                comment.setAttribute('class', 'question-result-comment');
+                comment.setAttribute('type', 'text');
+                comment.setAttribute('name', 'comment-label');
+                comment.appendChild(
+                  document.createTextNode(
+                    'Comments: ' + resultsObj[i]['comment']
+                  )
+                );
+
                 li.appendChild(pQuestion);
                 li.appendChild(table);
+                li.appendChild(comment);
+
                 olresult.appendChild(li);
               }
 

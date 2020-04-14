@@ -49,6 +49,13 @@
   background-color: steelblue;
 }
 
+.question-result-comment {
+  margin-left: -20px;
+  margin-top: 0px;
+  padding: 10px;
+  background-color: rgba(112, 128, 144, 0.1);
+}
+
 table,
 th,
 td {
