@@ -254,6 +254,14 @@ function genQuestion(row, table) {
   });
 }
 
+function genQuestion1(row, table) {
+  var tr = document.createElement('tr');
+  table.appendChild(tr);
+  Object.values(row).forEach((value) => {
+    genColumn(value, tr);
+  });
+}
+
 //renders options for grader drop down
 function renderOptions(exams) {
   let selectBar = document.querySelector('#selectBar');
@@ -306,6 +314,46 @@ async function renderQuestions() {
     genQuestion(currentVal, table);
   });
 }
+
+async function renderQuestions1() {
+  const questionUrl =
+    'https://web.njit.edu/~tg253/CS490/beta/front/questionproxy.php';
+  let table = document.querySelector('#qTable1');
+  table.innerHTML = '';
+  renderHeaders(
+    [
+      'Question',
+      'Description',
+      'Dificulty',
+      'Category',
+      'Score',
+      'Constraint',
+    ],
+    table
+  );
+  response = await getJsonData(questionUrl);
+  response.map((currentVal) => {
+    if (
+      searchString !== '' &&
+      currentVal.description.search(searchString) === -1 &&
+      currentVal.name.search(searchString) === -1
+    ) {
+      return;
+    }
+    if (dificulty !== 'none' && currentVal.difficulty !== dificulty) {
+      return;
+    }
+    if (category !== 'none' && currentVal.category !== category) {
+      return;
+    }
+    if (constraint !== 'none' && currentVal.questionConstraint !== constraint) {
+      return;
+    }
+
+    genQuestion1(currentVal, table);
+  });
+}
+
 
 //renders students
 async function renderStudents() {
@@ -469,6 +517,7 @@ function updateScreen() {
     insertSuccessText.innerText = 'Question Insert Unsuccessful';
   }
   renderQuestions();
+  renderQuestions1();
 }
 
 //handle question submit
@@ -526,6 +575,7 @@ function onSubmit(event) {
     }
   };
   renderQuestions();
+  renderQuestions1();
 }
 
 function applyFilters(event) {
@@ -535,6 +585,15 @@ function applyFilters(event) {
   constraint = document.getElementById('constraintSelect').value;
   searchString = document.getElementById('SearchText').value;
   renderQuestions();
+}
+
+function applyFilters1(event) {
+  event.preventDefault();
+  category = document.getElementById('categorySelect1').value;
+  dificulty = document.getElementById('difficultySelect1').value;
+  constraint = document.getElementById('constraintSelect1').value;
+  searchString = document.getElementById('SearchText1').value;
+  renderQuestions1();
 }
 
 function visibilityChange(element) {
@@ -585,7 +644,9 @@ function init() {
   document.getElementById('gradeForm').onsubmit = gradeExam;
   document.getElementById('updateGrade').onsubmit = confirmGrades;
   document.getElementById('fForm').onsubmit = applyFilters;
+  document.getElementById('fForm1').onsubmit = applyFilters1;
   renderQuestions();
+  renderQuestions1();
   renderExams();
   renderStudents();
   renderGrader(user);
@@ -627,6 +688,15 @@ function rmcase()
     mainlist.removeChild(test);
     counter--;
   }
+}
+
+function blah()
+{
+  var table = document.getElementById("qTable1");
+  var rows = table.childNodes[1];
+  //var data = add.childNodes[0];
+ //add.removeChild(data);
+  console.log(table.length);
 }
 
 //globals 

@@ -12,11 +12,16 @@ ul
   padding: 5px;
 }
 
+#filter1
+{
+  width:70%;
+}
+
 .question-form-container
 {
-  margin-left: 7%;
-  margin-top: 4%;
+  margin:auto;
 }
+
 
 .create-exam-container {
   display: flex;
