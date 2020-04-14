@@ -29,7 +29,8 @@
       var studentDiv = document.getElementById('student-container');
 
       function logout() {
-        let homepage = 'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+        let homepage =
+          'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
 
         window.location.href = homepage;
 
@@ -238,6 +239,19 @@
                 )
               );
               li.appendChild(pDescription);
+
+              var pConstraint = document.createElement('p');
+              qConstraint = response['questions'][i]['questionConstraint'];
+              if (qConstraint != null) {
+                pConstraint.appendChild(
+                  document.createTextNode(
+                    'You must use the constraint: "' +
+                      response['questions'][i]['questionConstraint'] +
+                      '" in your solution.'
+                  )
+                );
+                li.appendChild(pConstraint);
+              }
 
               // create input element for each question answer
               var inputAnswer = document.createElement('textarea');
