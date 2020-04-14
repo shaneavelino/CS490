@@ -119,11 +119,10 @@ function getsubItemsUpdate(table){
    for (var i = 1, row; (row = table.rows[i]); i++) {
       questionResponse.push({
          subItem: row.cells[0].innerHTML,
-         Input: row.cells[1].innerHTML,
+         input: row.cells[1].innerHTML,
          expectedOutput: row.cells[2].innerHTML, 
          studentOutput: row.cells[3].innerHTML, 
-         score: row.cells[4].firstChild.value,
-         comments: row.cells[5].firstChild.value 
+         score: row.cells[4].firstChild.value
       });
    }
    return(questionResponse);
@@ -145,7 +144,8 @@ function totalGradePoints(table){
 async function confirmGrades(event) {
   event.preventDefault();
   const table = document.querySelector('#gTable');
-  for (var i = 1, row; (row = table.rows[i]); i+=2) {
+  for (var i = 1, row; (row = table.rows[i]); i+=3) {
+    console.log(table.rows[i+2].cells[3].childNodes[0].value)
     jsonData = {
       user: row.cells[0].innerHTML,
       exam: selectedExam,
@@ -154,8 +154,10 @@ async function confirmGrades(event) {
       questionConstraint: row.cells[2].innerHTML,
       autograde: row.cells[4].innerHTML,
       adjustedGrade:     totalGradePoints(table.rows[i+1].cells[3].childNodes[0]),
+      comment: table.rows[i+2].cells[3].childNodes[0].value,
       testCaseResponse:  getsubItemsUpdate(table.rows[i+1].cells[3].childNodes[0])
     };
+    
     submitJsonData(
       'https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php',
       'PUT',
@@ -402,7 +404,11 @@ async function gradeExam(event) {
   let body = new Object();
   body.fetchAllResultsByExam = val;
   let data = await postJsonData(gradeUrl, body);
-  renderGradeTable(data, val);
+  //delete variables not to print 
+  for (row in data[val]){
+      delete data[val][row].comment;
+      delete data[val][row].finalGrade;
+  }
 }
 // render grade details
 function renderGradeDetails(gradeDetails, tr) {
@@ -422,8 +428,7 @@ function renderGradeDetails(gradeDetails, tr) {
       'Input',
       'Output', 
       'Student Output',
-      'Partial Score',
-      'Comments'
+      'Partial Score'
     ],
     subTable
   );
@@ -446,9 +451,7 @@ function renderGradeDetails(gradeDetails, tr) {
       var tdElement = document.createElement('td');
       tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
       subTr.appendChild(tdElement);
-      var tdElement = document.createElement('td');
-      tdElement.innerHTML = "<textarea rows='4' cols='50' placeholder='Instructor comments'></textarea>";
-      subTr.appendChild(tdElement);
+     
   });
   return;
 }
@@ -479,6 +482,19 @@ function renderGradeTable(data, exam) {
     var subTableRow = document.createElement('tr');
     renderGradeDetails(row.testCaseResponse, subTableRow);
     table.appendChild(subTableRow);
+    
+    var commentRow = document.createElement('tr');
+    var padding1 = document.createElement('td');
+    var padding2 = document.createElement('td');
+    var padding3 = document.createElement('td');
+    commentRow.appendChild(padding1);
+    commentRow.appendChild(padding2);
+    commentRow.appendChild(padding3);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML = "<textarea rows='8' cols='100' placeholder='Instructor comments'></textarea>";
+    commentRow.appendChild(tdElement);
+    table.appendChild(commentRow);
+
   });
 }
 
@@ -620,9 +636,7 @@ function visibilityChange(element) {
 }
 
 function logout() {
-  let homepage =
-    //'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
-    'http://localhost:3000/release-candidate/front-new/login.html';
+  let homepage ='https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
 
   window.location.href = homepage;
 
