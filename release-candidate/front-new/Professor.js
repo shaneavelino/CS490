@@ -1,6 +1,7 @@
 //creates question
 var examFinal = [];
 
+//Thomas Garside
 //creates exam from selected questions
 async function createExam(event) {
   event.preventDefault();
@@ -79,7 +80,7 @@ function removeDuplicateQuestions(examList) {
 
   return temp;
 }
-
+//Thomas Garside
 //get checked rows
 function getCheckedRows(table) {
   let checkedRows = [];
@@ -96,7 +97,7 @@ function getCheckedRows(table) {
   }
   return checkedRows;
 }
-
+//Thomas Garside
 //get checked rows
 function getCheckedStudents(table) {
   let checkedRows = [];
@@ -112,7 +113,7 @@ function getCheckedStudents(table) {
   }
   return checkedRows;
 }
-
+//Thomas Garside
 // grabs professor updates from sub table 
 function getsubItemsUpdate(table){
    let questionResponse = [];
@@ -127,7 +128,7 @@ function getsubItemsUpdate(table){
    }
    return(questionResponse);
 }
-
+//Thomas Garside
 //totals adjusted Grades 
 function totalGradePoints(table){
     let sum = 0; 
@@ -139,7 +140,7 @@ function totalGradePoints(table){
     return sum; 
 
 }
-
+//Thomas Garside
 // confirm grades
 async function confirmGrades(event) {
   event.preventDefault();
@@ -169,7 +170,7 @@ async function confirmGrades(event) {
   confirmMsg.innerText = "Exam Graded";
   gradeExam(document.createEvent('Event'));
 }
-
+//Thomas Garside
 function assignExam(event) {
   event.preventDefault();
   const assignForm = document.querySelector('#assignForm');
@@ -208,7 +209,7 @@ function assignExam(event) {
     confirmMsg.innerText = "Exams Closed";
   }
 }
-
+//Thomas Garside
 // renders table headders
 function renderHeaders(headers, table) {
   var tr = document.createElement('tr');
@@ -219,7 +220,7 @@ function renderHeaders(headers, table) {
     tr.appendChild(th);
   });
 }
-
+//Thomas Garside
 //inserts columns into row
 function genColumn(item, row) {
   if (!Array.isArray(item)) {
@@ -228,7 +229,7 @@ function genColumn(item, row) {
     row.appendChild(tdElement);
   }
 }
-
+//Thomas Garside
 //inserts rows into table
 function genAssign(row, table) {
   var tr = document.createElement('tr');
@@ -240,7 +241,7 @@ function genAssign(row, table) {
     genColumn(value, tr);
   });
 }
-
+//Thomas Garside
 //inserts rows into table
 function genQuestion(row, table) {
   var tr = document.createElement('tr');
@@ -263,7 +264,7 @@ function genQuestion1(row, table) {
     genColumn(value, tr);
   });
 }
-
+//Thomas Garside
 //renders options for grader drop down
 function renderOptions(exams) {
   let selectBar = document.querySelector('#selectBar');
@@ -274,7 +275,7 @@ function renderOptions(exams) {
     selectBar.appendChild(opt);
   });
 }
-
+//Thomas Garside
 //renders table
 async function renderQuestions() {
   const questionUrl =
@@ -356,7 +357,7 @@ async function renderQuestions1() {
   });
 }
 
-
+//Thomas Garside
 //renders students
 async function renderStudents() {
   const questionUrl =
@@ -369,7 +370,7 @@ async function renderStudents() {
     genAssign(currentVal, table);
   });
 }
-
+//Thomas Garside
 // renders table of exams by professor
 async function renderExams() {
   const examUrl =
@@ -383,7 +384,7 @@ async function renderExams() {
     genAssign(currentVal, table);
   });
 }
-
+//Thomas Garside
 async function renderGrader(prof) {
   const profExamUrl =
     'https://web.njit.edu/~tg253/CS490/beta/front/examproxy.php?prof=';
@@ -392,7 +393,7 @@ async function renderGrader(prof) {
   let examsResponse = await getJsonData(getUrl);
   renderOptions(examsResponse.exams);
 }
-
+//Thomas Garside
 //grade exam
 async function gradeExam(event) {
   event.preventDefault();
@@ -410,6 +411,7 @@ async function gradeExam(event) {
       delete data[val][row].finalGrade;
   }
 }
+//Thomas Garside
 // render grade details
 function renderGradeDetails(gradeDetails, tr) {
   var padding1 = document.createElement('td');
@@ -455,9 +457,8 @@ function renderGradeDetails(gradeDetails, tr) {
   });
   return;
 }
-
+//Thomas Garside
 // render grade table
-
 function renderGradeTable(data, exam) {
   let table = document.querySelector('#gTable');
   table.innerHTML = '';
@@ -497,13 +498,13 @@ function renderGradeTable(data, exam) {
 
   });
 }
-
+//Thomas Garside
 //utility functions
 async function getJsonData(url) {
   let response = await fetch(url);
   return response.json();
 }
-
+//Thomas Garside
 async function postJsonData(url, data) {
   let response = await fetch(url, {
     method: 'POST',
@@ -512,7 +513,7 @@ async function postJsonData(url, data) {
   });
   return response.json();
 }
-
+//Thomas Garside
 function submitJsonData(url, httpMethod, jsondata) {
   fetch(url, {
     method: httpMethod,
@@ -523,7 +524,7 @@ function submitJsonData(url, httpMethod, jsondata) {
   }).then((response) => response.json());
   return response;
 }
-
+//Thomas Garside
 // insert question section
 //updates screen on question creation
 function updateScreen() {
@@ -593,7 +594,7 @@ function onSubmit(event) {
   renderQuestions();
   renderQuestions1();
 }
-
+//Thomas Garside
 function applyFilters(event) {
   event.preventDefault();
   category = document.getElementById('categorySelect').value;
@@ -642,7 +643,7 @@ function logout() {
 
   sessionStorage.clear();
 }
-
+//Thomas Garside
 // Adds function calls to html representation calls initial functions
 function init() {
   //use to validate user role
