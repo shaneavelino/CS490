@@ -49,6 +49,7 @@
     </div>
 
     <div class="question-form-container" id="questionCreate">
+      <div id="createQuestion">
       <h2>Create a Question</h2>
       <div class="question-form">
         <form id="qForm" method="POST" action="#">
@@ -143,6 +144,57 @@
       <div>
         <span id="insertSuccessText"></span>
       </div>
+      </div>
+      <div id="filter1">
+
+        <form id="fForm1">
+          <label for="difficultySelect1">Difficulty</label>
+          <select id="difficultySelect1">
+            <option value="none">None</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+          <label for="categorySelect1">Category</label>
+          <select id="categorySelect1">
+            <option value="none">None</option>
+            <option value="lists">Lists</option>
+            <option value="turtles">Turtles</option>
+            <option value="if">If</option>
+            <option value="ForLoops">For Loops</option>
+            <option value="Def">Def</option>
+            <option value="While">While</option>
+            <option value="StringMethods">String Methods</option>
+            <option value="Files">Files</option>
+            <option value="Dictionaries">Dictionaries</option>
+            <option value="Namespaces">Namespaces</option>
+            <option value="Exceptions">Exceptions</option>
+            <option value="Classes">Classes</option>
+          </select>
+          <label for="constraintSelect1">Constraint</label>
+          <select id="constraintSelect1">
+             <option value="none">None</option>
+             <option value="for">For</option>
+             <option value="while">While</option>
+             <option value="print">Print</option>
+          </select>
+          <label for="SearchText1">Keyword</label>
+          <input type="text" id="SearchText1" />
+          <input type="submit" value="Apply Filters" />
+        </form>
+
+        <div class="eForm-table1">
+          <table id="qTable1"></table>
+        </div>
+
+
+
+
+
+      </div>
+  
+
+
     </div>
 
     <div id="examCreate" hidden>
