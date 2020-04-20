@@ -409,6 +409,7 @@ async function gradeExam(event) {
       delete data[val][row].comment;
       delete data[val][row].finalGrade;
   }
+  renderGradeTable(data, val);
 }
 // render grade details
 function renderGradeDetails(gradeDetails, tr) {

@@ -309,7 +309,7 @@
 
             // each answer name from the form
             let listId = document.getElementById(questionId);
-            let answerId = listId.children[2].getAttribute('id');
+            let answerId = listId.children[2].getAttribute('id') !== null ? listId.children[2].getAttribute('id') : listId.children[3].getAttribute('id');
             let answerText = document.getElementById(answerId).value;
             resultsIter['answer'] = answerText;
 
