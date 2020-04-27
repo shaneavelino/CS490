@@ -16,6 +16,11 @@ async function createExam(event) {
     'POST',
     JSON.stringify(jsonData)
   );
+  if (response.status == 200) {
+    createExamSubmitText.innerText = 'Exam Insert Successful';
+  } else {
+    createExamSubmitText.innerText = 'Exam Insert Unsuccessful';
+  }
   renderExams();
 }
 
@@ -47,9 +52,9 @@ function addToExamList() {
       p.appendChild(
         document.createTextNode(
           finalQuestions[i]['name'] +
-            ' [' +
+            ' ' +
             finalQuestions[i]['score'] +
-            ' points]  '
+            ' points  '
         )
       );
       let removeButton = document.createElement('input');
@@ -113,39 +118,38 @@ function getCheckedStudents(table) {
   return checkedRows;
 }
 
-// grabs professor updates from sub table 
-function getsubItemsUpdate(table){
-   let questionResponse = [];
-   for (var i = 1, row; (row = table.rows[i]); i++) {
-      questionResponse.push({
-         subItem: row.cells[0].innerHTML,
-         input: row.cells[1].innerHTML,
-         expectedOutput: row.cells[2].innerHTML, 
-         studentOutput: row.cells[3].innerHTML, 
-         score: row.cells[4].firstChild.value
-      });
-   }
-   return(questionResponse);
+// grabs professor updates from sub table
+function getsubItemsUpdate(table) {
+  let questionResponse = [];
+  for (var i = 1, row; (row = table.rows[i]); i++) {
+    questionResponse.push({
+      subItem: row.cells[0].innerHTML,
+      input: row.cells[1].innerHTML,
+      expectedOutput: row.cells[2].innerHTML,
+      studentOutput: row.cells[3].innerHTML,
+      score: row.cells[4].firstChild.value,
+    });
+  }
+  return questionResponse;
 }
 
-//totals adjusted Grades 
-function totalGradePoints(table){
-    let sum = 0; 
-    for (var i = 1, row; (row = table.rows[i]); i++) {
-        console.log(parseFloat(row.cells[4].firstChild.value));
-        sum += parseFloat(row.cells[4].firstChild.value); 
-    }
-    console.log(sum);
-    return sum; 
-
+//totals adjusted Grades
+function totalGradePoints(table) {
+  let sum = 0;
+  for (var i = 1, row; (row = table.rows[i]); i++) {
+    console.log(parseFloat(row.cells[4].firstChild.value));
+    sum += parseFloat(row.cells[4].firstChild.value);
+  }
+  console.log(sum);
+  return sum;
 }
 
 // confirm grades
 async function confirmGrades(event) {
   event.preventDefault();
   const table = document.querySelector('#gTable');
-  for (var i = 1, row; (row = table.rows[i]); i+=3) {
-    console.log(table.rows[i+2].cells[3].childNodes[0].value)
+  for (var i = 1, row; (row = table.rows[i]); i += 3) {
+    console.log(table.rows[i + 2].cells[3].childNodes[0].value);
     jsonData = {
       user: row.cells[0].innerHTML,
       exam: selectedExam,
@@ -153,20 +157,22 @@ async function confirmGrades(event) {
       question: row.cells[1].innerHTML,
       questionConstraint: row.cells[2].innerHTML,
       autograde: row.cells[4].innerHTML,
-      adjustedGrade:     totalGradePoints(table.rows[i+1].cells[3].childNodes[0]),
-      comment: table.rows[i+2].cells[3].childNodes[0].value,
-      testCaseResponse:  getsubItemsUpdate(table.rows[i+1].cells[3].childNodes[0])
+      adjustedGrade: totalGradePoints(table.rows[i + 1].cells[3].childNodes[0]),
+      comment: table.rows[i + 2].cells[3].childNodes[0].value,
+      testCaseResponse: getsubItemsUpdate(
+        table.rows[i + 1].cells[3].childNodes[0]
+      ),
     };
-    
+
     submitJsonData(
       'https://web.njit.edu/~tg253/CS490/beta/front/resultproxy.php',
       'PUT',
       JSON.stringify(jsonData)
     );
   }
-  
-  let confirmMsg = document.getElementById("updateGradeNotification");
-  confirmMsg.innerText = "Exam Graded";
+
+  let confirmMsg = document.getElementById('updateGradeNotification');
+  confirmMsg.innerText = 'Exam Graded';
   gradeExam(document.createEvent('Event'));
 }
 
@@ -191,8 +197,8 @@ function assignExam(event) {
         );
       });
     });
-    let confirmMsg = document.getElementById("assignResponse");
-    confirmMsg.innerText = "Exams Assigned";
+    let confirmMsg = document.getElementById('assignResponse');
+    confirmMsg.innerText = 'Exams Assigned';
   }
   if (formVal === 'close') {
     let exams = getCheckedStudents('aTable');
@@ -204,8 +210,8 @@ function assignExam(event) {
         JSON.stringify(jsonData)
       );
     });
-    let confirmMsg = document.getElementById("assignResponse");
-    confirmMsg.innerText = "Exams Closed";
+    let confirmMsg = document.getElementById('assignResponse');
+    confirmMsg.innerText = 'Exams Closed';
   }
 }
 
@@ -323,14 +329,7 @@ async function renderQuestions1() {
   let table = document.querySelector('#qTable1');
   table.innerHTML = '';
   renderHeaders(
-    [
-      'Question',
-      'Description',
-      'Dificulty',
-      'Category',
-      'Score',
-      'Constraint',
-    ],
+    ['Question', 'Description', 'Dificulty', 'Category', 'Score', 'Constraint'],
     table
   );
   response = await getJsonData(questionUrl);
@@ -355,7 +354,6 @@ async function renderQuestions1() {
     genQuestion1(currentVal, table);
   });
 }
-
 
 //renders students
 async function renderStudents() {
@@ -404,10 +402,10 @@ async function gradeExam(event) {
   let body = new Object();
   body.fetchAllResultsByExam = val;
   let data = await postJsonData(gradeUrl, body);
-  //delete variables not to print 
-  for (row in data[val]){
-      delete data[val][row].comment;
-      delete data[val][row].finalGrade;
+  //delete variables not to print
+  for (row in data[val]) {
+    delete data[val][row].comment;
+    delete data[val][row].finalGrade;
   }
   renderGradeTable(data, val);
 }
@@ -423,36 +421,37 @@ function renderGradeDetails(gradeDetails, tr) {
   var subTable = document.createElement('table');
   tabElement.appendChild(subTable);
   tr.appendChild(tabElement);
-    renderHeaders(
+  renderHeaders(
     [
       'Question Component',
       'Input',
-      'Output', 
+      'Output',
       'Student Output',
-      'Partial Score'
+      'Partial Score',
     ],
     subTable
   );
 
   gradeDetails.map((detail) => {
-      var subTr = document.createElement('tr');
-      subTable.appendChild(subTr);
-      var tdElement = document.createElement('td');
-      tdElement.innerHTML =  detail.subItem;
-      subTr.appendChild(tdElement);
-      var tdElement = document.createElement('td');
-      tdElement.innerHTML =  detail.input !== undefined ? detail.input : 'N/A' ;
-      subTr.appendChild(tdElement);
-      var tdElement = document.createElement('td');
-      tdElement.innerHTML =  detail.expectedOutput !== undefined ? detail.expectedOutput : 'N/A' ;
-      subTr.appendChild(tdElement);
-      var tdElement = document.createElement('td');
-      tdElement.innerHTML =  detail.studentOutput !== undefined ? detail.studentOutput : 'N/A' ;
-      subTr.appendChild(tdElement);
-      var tdElement = document.createElement('td');
-      tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
-      subTr.appendChild(tdElement);
-     
+    var subTr = document.createElement('tr');
+    subTable.appendChild(subTr);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML = detail.subItem;
+    subTr.appendChild(tdElement);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML = detail.input !== undefined ? detail.input : 'N/A';
+    subTr.appendChild(tdElement);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML =
+      detail.expectedOutput !== undefined ? detail.expectedOutput : 'N/A';
+    subTr.appendChild(tdElement);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML =
+      detail.studentOutput !== undefined ? detail.studentOutput : 'N/A';
+    subTr.appendChild(tdElement);
+    var tdElement = document.createElement('td');
+    tdElement.innerHTML = "<input type='text' value=" + detail.score + '>';
+    subTr.appendChild(tdElement);
   });
   return;
 }
@@ -483,7 +482,7 @@ function renderGradeTable(data, exam) {
     var subTableRow = document.createElement('tr');
     renderGradeDetails(row.testCaseResponse, subTableRow);
     table.appendChild(subTableRow);
-    
+
     var commentRow = document.createElement('tr');
     var padding1 = document.createElement('td');
     var padding2 = document.createElement('td');
@@ -492,10 +491,10 @@ function renderGradeTable(data, exam) {
     commentRow.appendChild(padding2);
     commentRow.appendChild(padding3);
     var tdElement = document.createElement('td');
-    tdElement.innerHTML = "<textarea rows='8' cols='100' placeholder='Instructor comments'></textarea>";
+    tdElement.innerHTML =
+      "<textarea rows='8' cols='100' placeholder='Instructor comments'></textarea>";
     commentRow.appendChild(tdElement);
     table.appendChild(commentRow);
-
   });
 }
 
@@ -637,7 +636,8 @@ function visibilityChange(element) {
 }
 
 function logout() {
-  let homepage ='https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
+  let homepage =
+    'https://web.njit.edu/~tg253/CS490/release-candidate/front-new/login.html';
 
   window.location.href = homepage;
 
@@ -667,54 +667,49 @@ function init() {
   renderGrader(user);
 }
 
-function addcase()
-{
-  var mainlist = document.getElementById("testCaseList");
-  if(counter < 7)
-  {
+function addcase() {
+  var mainlist = document.getElementById('testCaseList');
+  if (counter < 7) {
     counter++;
-    if(counter == 7)
-    {counter--;return 0;}
+    if (counter == 7) {
+      counter--;
+      return 0;
+    }
 
-    var list = document.createElement("li");
-    var label = document.createElement("label");
-    var inputCase = document.createElement("input");
-    var outputCase = document.createElement("input");
-    
-    list.setAttribute("id","tc"+counter);
-    label.setAttribute("for","testcase"+counter);
-    label.innerText = "Test Case "+counter+": ";
+    var list = document.createElement('li');
+    var label = document.createElement('label');
+    var inputCase = document.createElement('input');
+    var outputCase = document.createElement('input');
+
+    list.setAttribute('id', 'tc' + counter);
+    label.setAttribute('for', 'testcase' + counter);
+    label.innerText = 'Test Case ' + counter + ': ';
     list.appendChild(label);
     list.appendChild(inputCase);
     list.appendChild(outputCase);
 
     mainlist.appendChild(list);
-
-    
   }
 }
 
-function rmcase()
-{
-  if(counter > 2)
-  {
-    var mainlist = document.getElementById("testCaseList");
-    var test = document.getElementById("tc"+counter);
+function rmcase() {
+  if (counter > 2) {
+    var mainlist = document.getElementById('testCaseList');
+    var test = document.getElementById('tc' + counter);
     mainlist.removeChild(test);
     counter--;
   }
 }
 
-function blah()
-{
-  var table = document.getElementById("qTable1");
+function blah() {
+  var table = document.getElementById('qTable1');
   var rows = table.childNodes[1];
   //var data = add.childNodes[0];
- //add.removeChild(data);
+  //add.removeChild(data);
   console.log(table.length);
 }
 
-//globals 
+//globals
 var counter = 2;
 var cases = 3;
 var category = 'none';
