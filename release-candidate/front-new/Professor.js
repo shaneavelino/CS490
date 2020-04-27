@@ -16,11 +16,9 @@ async function createExam(event) {
     'POST',
     JSON.stringify(jsonData)
   );
-  if (response.status == 200) {
-    createExamSubmitText.innerText = 'Exam Insert Successful';
-  } else {
-    createExamSubmitText.innerText = 'Exam Insert Unsuccessful';
-  }
+ 
+  createExamSubmitText.innerText = 'Exam Insert Successful';
+  console.log("createExamSubmitText.innerText"); 
   renderExams();
 }
 
