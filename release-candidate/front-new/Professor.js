@@ -684,6 +684,8 @@ function addcase()
     list.setAttribute("id","tc"+counter);
     label.setAttribute("for","testcase"+counter);
     label.innerText = "Test Case "+counter+": ";
+    inputCase.setAttribute("placeholder","Input "+counter);
+    outputCase.setAttribute("placeholder","Output "+counter);
     list.appendChild(label);
     list.appendChild(inputCase);
     list.appendChild(outputCase);
