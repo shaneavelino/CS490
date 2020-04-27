@@ -669,6 +669,21 @@ function addcase() {
   var mainlist = document.getElementById('testCaseList');
   if (counter < 7) {
     counter++;
+<<<<<<< HEAD
+    if(counter == 7)
+    {counter--;return 0;}
+
+    var list = document.createElement("li");
+    var label = document.createElement("label");
+    var inputCase = document.createElement("input");
+    var outputCase = document.createElement("input");
+    
+    list.setAttribute("id","tc"+counter);
+    label.setAttribute("for","testcase"+counter);
+    label.innerText = "Test Case "+counter+": ";
+    inputCase.setAttribute("placeholder","Input "+counter);
+    outputCase.setAttribute("placeholder","Output "+counter);
+=======
     if (counter == 7) {
       counter--;
       return 0;
@@ -682,6 +697,7 @@ function addcase() {
     list.setAttribute('id', 'tc' + counter);
     label.setAttribute('for', 'testcase' + counter);
     label.innerText = 'Test Case ' + counter + ': ';
+>>>>>>> 6542956ff96262d83a919729eef8540770ea7a90
     list.appendChild(label);
     list.appendChild(inputCase);
     list.appendChild(outputCase);

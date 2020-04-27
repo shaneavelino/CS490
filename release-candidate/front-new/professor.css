@@ -3,6 +3,14 @@ ul
   list-style-type: none;
 }
 
+
+label
+{
+  width: 30%;
+  display: inline-block;
+
+}
+
 #eForm {
   display: flex;
   width: 100%;
