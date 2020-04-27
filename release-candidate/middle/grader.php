@@ -183,19 +183,32 @@ class Grader {
   // return the student's result from the python script
   public function get_student_output($input, $question, $answer) {
 
-    // check for print statement in student answer, so we can create different test in python
+    // check for print statement in student answer, so we can generate a different test in python
     if (strpos($answer, "print")) {
       $callFunction = $input . " = '" . $input . "'\n" . $question . "($input)";
     } else {
       $callFunction = "print(" . $question . "($input))";
     }
-    // create python text file from input answer, append the function name with the test case input
-    //$callFunction = "print(" . $question . "($input))";
-    $pythonListing = "$answer\n\n$callFunction";
     
+    // check if colon @ end of the first line exists, insert otherwise
+    $first_line = strstr($answer, "\n", true);
+    if (strpos($first_line, ":") === false) {
+      // code body that will properly execute
+      $code_input = $answer;
+      $substr = ')';
+      $attach = ':';
+      
+      $gen_colon = str_replace($substr, $substr.$attach, $code_input);
+
+      $py_script = "$gen_colon\n\n$callFunction";
+    } else {
+      $py_script = "$answer\n\n$callFunction";
+    }
+
+    // create python text file from input answer, append the function name with the test case input
     $filename = $question . '.py';
     // use the student's function name to run the python interpreter
-    $pythonfile = file_put_contents($filename, $pythonListing);
+    $pythonfile = file_put_contents($filename, $py_script);
     // execute python text file
     // return result of file
     $student_result = shell_exec("python " . $filename . " 2>&1");
