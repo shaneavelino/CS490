@@ -38,6 +38,13 @@
   width: 100%;
 }
 
+#testCaseList{
+  padding-left:0;
+}
+.testcaseInput{
+  margin-left:1%;
+ 
+}
 .results-container {
   display: flex;
   flex-direction: column;
@@ -130,6 +137,14 @@ body {
   font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
   font-size: 14px;
   resize: none;
+}
+
+
+.testcaseLabel
+{
+  width: 30%;
+  display: inline-block;
+
 }
 
 /* input[type='submit'] {
