@@ -693,9 +693,12 @@ function addcase() {
     var label = document.createElement('label');
     var inputCase = document.createElement('input');
     var outputCase = document.createElement('input');
-
+    
+    inputCase.setAttribute('class','testcaseInput');
+    outputCase.setAttribute('class','testcaseInput');
     list.setAttribute('id', 'tc' + counter);
     label.setAttribute('for', 'testcase' + counter);
+    label.setAttribute('class', 'testcaseLabel');
     label.innerText = 'Test Case ' + counter + ': ';
 >>>>>>> 6542956ff96262d83a919729eef8540770ea7a90
     list.appendChild(label);
